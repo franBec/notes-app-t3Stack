@@ -1,7 +1,29 @@
 import type { NextPage } from 'next'
+import { NextApiRequest } from 'next'
 
-const Home: NextPage = () => {
-  return <></>
+import Home from '../components/home/home'
+import Login from '../components/login/login'
+
+export async function getServerSideProps({ req }: { req: NextApiRequest }) {
+  /*
+  const cookieName = process.env.COOKIENAME;
+  const { permissions } = await getCurrentUser_permissions(
+    req.cookies[cookieName]
+  );
+*/
+  const permissions: string[] | null = null
+  return {
+    props: { permissions },
+  }
 }
 
-export default Home
+interface Props {
+  permissions: string[] | null
+}
+
+const Index: NextPage<Props> = ({ permissions }) => {
+  return permissions ? <Home permissions={permissions} /> : <Login />
+  //return true ? <Home permissions={[]} /> : <Login />
+}
+
+export default Index
