@@ -19,14 +19,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <div className="flex flex-col justify-between">
+      <div className="flex flex-col h-screen justify-between">
         <Header />
 
         {/* Toast notifications */}
         <Toaster position="top-center" reverseOrder={true} />
 
         {/* main content */}
-        <main className="p-4 h-screen bg-slate-100">{children}</main>
+        <main className="p-4 grow bg-slate-100">{children}</main>
 
         {/* footer */}
         <Footer />
