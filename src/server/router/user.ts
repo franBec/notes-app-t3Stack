@@ -2,7 +2,7 @@ import { createRouter } from './context'
 import { TRPCError } from '@trpc/server'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 
-import { signupSchema } from '../../schemas/user.schema'
+import { signupSchema, filterAllSchema } from '../../schemas/user.schema'
 
 export const userRouter = createRouter()
   /**
@@ -20,9 +20,9 @@ export const userRouter = createRouter()
 
         //return
         return user
-      } catch (e) {
-        if (e instanceof PrismaClientKnownRequestError) {
-          if (e.code === 'P2002') {
+      } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+          if (error.code === 'P2002') {
             throw new TRPCError({
               code: 'CONFLICT',
               message: 'User already exists',
@@ -33,7 +33,40 @@ export const userRouter = createRouter()
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Something went wrong',
-          cause: e,
+          cause: error,
+        })
+      }
+    },
+  })
+
+  /**
+   * get all users
+   */
+  .query('all', {
+    input: filterAllSchema,
+
+    async resolve({ input }) {
+      try {
+        //pagination
+        const page: number = input?.page || 1
+
+        //order by - sort by
+        let orderByObject = {}
+        if (input?.order) {
+          orderByObject = { [input.order]: input.sort }
+        }
+
+        //fetch from the database
+        return await prisma?.user.findMany({
+          skip: 10 * (page - 1),
+          take: 10,
+          orderBy: orderByObject,
+        })
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Something went wrong',
+          cause: error,
         })
       }
     },

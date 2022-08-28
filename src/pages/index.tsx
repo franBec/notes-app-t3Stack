@@ -22,8 +22,8 @@ interface Props {
 }
 
 const Index: NextPage<Props> = ({ permissions }) => {
-  return permissions ? <Home permissions={permissions} /> : <Login />
-  //return true ? <Home permissions={[]} /> : <Login />
+  //return permissions ? <Home permissions={permissions} /> : <Login />
+  return true ? <Home permissions={['USERS_SEE']} /> : <Login />
 }
 
 export default Index

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 
 import { faStickyNote } from '@fortawesome/free-solid-svg-icons'
 import { faArchive } from '@fortawesome/free-solid-svg-icons'
-import { faGaugeHigh } from '@fortawesome/free-solid-svg-icons'
+import { faUsers } from '@fortawesome/free-solid-svg-icons'
 
 import { useUsername } from '../../zustand/sessionStore'
 
@@ -33,8 +33,8 @@ const Home = ({ permissions }: { permissions: string[] }) => {
             link="/archivedNotes"
             title="Go to Archived Notes"
           />
-          {permissions.includes('DASHBOARD_SEE') && (
-            <HomeCard icon={faGaugeHigh} link="/dashboard" title="Dashboard" />
+          {permissions.includes('USERS_SEE') && (
+            <HomeCard icon={faUsers} link="/users" title="Users" />
           )}
         </div>
       </div>

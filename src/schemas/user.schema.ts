@@ -1,6 +1,7 @@
 import z from 'zod'
+import { sortEnum } from './sortEnum'
 
-//sign up form
+//used by the sign up form in /signup
 export const signupSchema = z.object({
   firstName: z
     .string()
@@ -20,3 +21,12 @@ export const signupSchema = z.object({
     .min(8, { message: 'At least 8 characters' })
     .max(127, { message: 'At most 127 characters' }),
 })
+
+//used by the table in /users
+export const filterAllSchema = z
+  .object({
+    page: z.number().nullish(),
+    order: z.string().nullish(),
+    sort: z.nativeEnum(sortEnum).nullish(),
+  })
+  .nullish()
