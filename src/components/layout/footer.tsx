@@ -7,7 +7,7 @@ const Footer = () => {
           target="_blank"
           className="text-white"
         >
-          Made by Pollito 🐤 with Nextjs & ♡
+          Made by Pollito 🐤 with T3Stack & ♡
         </a>
       </div>
     </footer>
