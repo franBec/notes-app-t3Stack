@@ -23,6 +23,10 @@ const getBaseUrl = () => {
   return `http://localhost:${process.env.PORT ?? 3000}` // dev SSR should use localhost
 }
 
+const getStaleTime = (): number => {
+  return Number(process.env.STALETIME) ?? 10
+}
+
 export default withTRPC<AppRouter>({
   config() {
     /**
@@ -45,7 +49,9 @@ export default withTRPC<AppRouter>({
       /**
        * @link https://react-query.tanstack.com/reference/QueryClient
        */
-      // queryClientConfig: { defaultOptions: { queries: { staleTime: 60 } } },
+      queryClientConfig: {
+        defaultOptions: { queries: { staleTime: getStaleTime() } },
+      },
     }
   },
   /**

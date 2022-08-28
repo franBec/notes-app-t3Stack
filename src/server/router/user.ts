@@ -32,7 +32,7 @@ export const userRouter = createRouter()
 
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Something went wrong',
+          message: '' + error,
           cause: error,
         })
       }
@@ -65,7 +65,7 @@ export const userRouter = createRouter()
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Something went wrong',
+          message: '' + error,
           cause: error,
         })
       }
