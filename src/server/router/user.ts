@@ -2,14 +2,17 @@ import { createRouter } from './context'
 import { TRPCError } from '@trpc/server'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 
-import { signupSchema, filterAllSchema } from '../../schemas/user.schema'
+import { env } from '../../env/server.mjs'
+
+import { SignupSchema } from '../../schemas/user.schema'
+import { RequestSchema, MetadataType } from '../../schemas/_pagination'
 
 export const userRouter = createRouter()
   /**
    * register a new user
    */
   .mutation('signup', {
-    input: signupSchema,
+    input: SignupSchema,
     async resolve({ ctx, input }) {
       try {
         //data = input except input.repeatPassword, cause prisma panics with an unknown arg from frontend
@@ -43,12 +46,13 @@ export const userRouter = createRouter()
    * get all users
    */
   .query('all', {
-    input: filterAllSchema,
+    input: RequestSchema,
 
     async resolve({ input }) {
       try {
         //pagination
-        const page: number = input?.page || 1
+        const page = input?.page || 1
+        const rowsByPage = Number(env.DEFAULT_ROWS_BY_PAGE) ?? 10
 
         //order by - sort by
         let orderByObject = {}
@@ -57,11 +61,20 @@ export const userRouter = createRouter()
         }
 
         //fetch from the database
-        return await prisma?.user.findMany({
-          skip: 10 * (page - 1),
-          take: 10,
+        const users = await prisma?.user.findMany({
+          skip: rowsByPage * (page - 1),
+          take: rowsByPage,
           orderBy: orderByObject,
         })
+
+        //send back metadata that might be useful
+        const metadata: MetadataType = {
+          totalRows: await prisma?.user.count(),
+          rowsByPage: rowsByPage,
+          currentPage: page,
+        }
+
+        return { users, metadata }
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',

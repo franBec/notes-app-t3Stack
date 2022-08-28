@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { trpc } from '../../utils/trpc'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { signupSchema } from '../../schemas/user.schema'
+import { SignupSchema } from '../../schemas/user.schema'
 
 import { useLoading } from '../../zustand/loadingStore'
 
@@ -22,7 +22,7 @@ const Signup = () => {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm({ resolver: zodResolver(signupSchema) })
+  } = useForm({ resolver: zodResolver(SignupSchema) })
 
   const { mutate, error } = trpc.useMutation('user.signup', {
     onSuccess: () => {

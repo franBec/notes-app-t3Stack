@@ -1,6 +1,7 @@
 import { User } from '@prisma/client'
 import { Dispatch, SetStateAction } from 'react'
-import { sortEnum } from '../../schemas/sortEnum'
+
+import { SortEnum, RequestType, MetadataType } from '../../schemas/_pagination'
 
 import {
   createColumnHelper,
@@ -11,22 +12,19 @@ import {
 
 const UsersTable = ({
   data,
+  metadata,
   setFilters,
 }: {
   data: User[] | undefined
-  setFilters: Dispatch<
-    SetStateAction<{
-      page: number
-      order: string
-      sort: sortEnum
-    }>
-  >
+  metadata: MetadataType
+  setFilters: Dispatch<SetStateAction<RequestType>>
 }) => {
   //react-table gets angry if I do not return when data is empty
   if (!data) {
     return <p>No data here, srry</p>
   }
 
+  //react-table
   const columnHelper = createColumnHelper<User>()
   const columns = [
     columnHelper.accessor('id', {
@@ -57,6 +55,7 @@ const UsersTable = ({
     getCoreRowModel: getCoreRowModel(),
   })
 
+  //render
   return (
     <div className="p-2">
       <table>
@@ -64,7 +63,7 @@ const UsersTable = ({
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} className="p-2 boder-2">
+                <th key={header.id} className="p-2 border-2">
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -73,7 +72,7 @@ const UsersTable = ({
                       )}
                 </th>
               ))}
-              <th>Actions</th>
+              <th className="p-2 border-2">Actions</th>
             </tr>
           ))}
         </thead>
