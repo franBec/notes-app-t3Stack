@@ -69,7 +69,7 @@ export const userRouter = createRouter()
 
         //send back metadata that might be useful
         const metadata: MetadataType = {
-          totalRows: await prisma?.user.count(),
+          totalRows: (await prisma?.user.count()) ?? 0,
           rowsByPage: rowsByPage,
           currentPage: page,
         }

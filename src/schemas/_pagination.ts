@@ -23,7 +23,7 @@ export type RequestType = z.infer<typeof RequestSchema>
 
 //METADATA returned after fetching data
 export const MetadataSchema = z.object({
-  totalRows: z.number().nullish(),
+  totalRows: z.number(),
   rowsByPage: z.number(),
   currentPage: z.number(),
 })

@@ -3,7 +3,7 @@ import { trpc } from '../../utils/trpc'
 import { SortEnum, RequestType } from '../../schemas/_pagination'
 
 import { useState } from 'react'
-import UsersTable from '../../components/users/table'
+import UsersTable from '../../components/users/usersTable'
 
 import ErrorComponent from '../../components/utils/errors/errorComponent'
 
