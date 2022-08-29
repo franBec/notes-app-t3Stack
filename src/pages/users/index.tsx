@@ -4,7 +4,7 @@ import { SortEnum, RequestType } from '../../schemas/_pagination'
 
 import { useState } from 'react'
 
-import Table from '../../components/users/table'
+import Table from '../../components/users/table/table'
 
 import LoadingScreen from '../../components/utils/loading/loadingScreen'
 import ErrorComponent from '../../components/utils/errors/errorComponent'

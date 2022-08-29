@@ -1,8 +1,9 @@
 import { User } from '@prisma/client'
 import { Dispatch, SetStateAction } from 'react'
 
-import { MetadataType, RequestType } from '../../schemas/_pagination'
-import PaginateNavbar from '../utils/pagination/paginateNavbar'
+import { MetadataType, RequestType } from '../../../schemas/_pagination'
+import PaginateNavbar from '../../utils/pagination/paginateNavbar'
+import Actions from './actions/_actions'
 
 const Table = ({
   data,
@@ -37,7 +38,9 @@ const Table = ({
             <td className="p-2 border-2">{it.firstName}</td>
             <td className="p-2 border-2">{it.lastName}</td>
             <td className="p-2 border-2">{it.mail}</td>
-            <td className="p-2 border-2">Actions here!</td>
+            <td className="p-2 border-2">
+              <Actions />
+            </td>
           </tr>
         ))}
       </tbody>
