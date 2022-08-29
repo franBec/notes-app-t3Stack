@@ -3,8 +3,10 @@ import { trpc } from '../../utils/trpc'
 import { SortEnum, RequestType } from '../../schemas/_pagination'
 
 import { useState } from 'react'
-import UsersTable from '../../components/users/usersTable'
 
+import Table from '../../components/users/table'
+
+import LoadingScreen from '../../components/utils/loading/loadingScreen'
 import ErrorComponent from '../../components/utils/errors/errorComponent'
 
 const Index = () => {
@@ -17,13 +19,15 @@ const Index = () => {
     <>
       <DefaultQueryCell
         query={trpc.useQuery(['user.all', filters])}
-        loading={() => <p>Loading stuff...</p>}
+        loading={() => <LoadingScreen />}
         success={({ data }) => (
-          <UsersTable
-            data={data.users}
-            metadata={data.metadata}
-            setFilters={setFilters}
-          />
+          <>
+            <Table
+              data={data.users}
+              metadata={data.metadata}
+              setFilters={setFilters}
+            />
+          </>
         )}
         error={({ error }) => <ErrorComponent message={error.toString()} />}
       />

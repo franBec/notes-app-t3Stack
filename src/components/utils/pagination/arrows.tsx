@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react'
-import { MetadataType, RequestType } from '../../schemas/_pagination'
+import { MetadataType, RequestType } from '../../../schemas/_pagination'
 import ArrowIcon, { ArrowEnum } from './arrowIcon'
 
 const Arrows = ({

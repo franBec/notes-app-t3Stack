@@ -2,9 +2,9 @@ import { User } from '@prisma/client'
 import { Dispatch, SetStateAction } from 'react'
 
 import { MetadataType, RequestType } from '../../schemas/_pagination'
-import PaginateNavbar from '../pagination/paginateNavbar'
+import PaginateNavbar from '../utils/pagination/paginateNavbar'
 
-const UsersTable = ({
+const Table = ({
   data,
   metadata,
   setFilters,
@@ -54,4 +54,4 @@ const UsersTable = ({
   )
 }
 
-export default UsersTable
+export default Table
