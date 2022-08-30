@@ -15,10 +15,20 @@ const Index = () => {
     order: 'id',
     sort: SortEnum.asc,
   })
+
+  const trpcQuery = trpc.useQuery(['user.all', filters])
+  const { refetch } = trpcQuery
   return (
     <>
+      <button
+        onClick={(e) => {
+          refetch()
+        }}
+      >
+        Refetch!
+      </button>
       <DefaultQueryCell
-        query={trpc.useQuery(['user.all', filters])}
+        query={trpcQuery}
         loading={() => <LoadingScreen />}
         success={({ data }) => (
           <>

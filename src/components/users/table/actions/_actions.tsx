@@ -1,10 +1,11 @@
+import { User } from '@prisma/client'
 import ActionEdit from './actionEdit'
 
-const Actions = () => {
+const Actions = ({ user }: { user: User }) => {
   return (
     <div className="flex justify-around items-center">
       {/* <ActionRead /> */}
-      <ActionEdit />
+      <ActionEdit user={user} />
     </div>
   )
 }

@@ -4,7 +4,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 
 import { env } from '../../env/server.mjs'
 
-import { SignupSchema } from '../../schemas/user.schema'
+import { SignupSchema, EditUserSchema } from '../../schemas/user.schema'
 import { RequestSchema, MetadataType } from '../../schemas/_pagination'
 
 export const userRouter = createRouter()
@@ -19,7 +19,7 @@ export const userRouter = createRouter()
         const { repeatPassword, ...data } = input
 
         //insert into the database
-        const user = ctx.prisma.user.create({ data: data })
+        const user = await ctx.prisma.user.create({ data: data })
 
         //return
         return user
@@ -75,6 +75,27 @@ export const userRouter = createRouter()
         }
 
         return { users, metadata }
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: '' + error,
+          cause: error,
+        })
+      }
+    },
+  })
+
+  /**
+   * edit a user
+   */
+  .mutation('edit', {
+    input: EditUserSchema,
+    async resolve({ ctx, input }) {
+      try {
+        await ctx.prisma.user.update({
+          where: { mail: input.mail },
+          data: input,
+        })
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',

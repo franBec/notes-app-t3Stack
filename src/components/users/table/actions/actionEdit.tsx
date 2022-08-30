@@ -1,18 +1,19 @@
+import { User } from '@prisma/client'
 import { useState } from 'react'
 import { FaPencilAlt } from 'react-icons/fa'
 
 import SimpleModal from '../../../utils/modal/modal'
 import UserForm from '../../form/userForm'
 
-const ActionEdit = () => {
+const ActionEdit = ({ user }: { user: User }) => {
   const [showModal, setShowModal] = useState(false)
 
   const renderModal = () => {
     return (
       <SimpleModal
-        modalTitle="Testing"
+        modalTitle="Edit User"
         setShowModal={setShowModal}
-        children={<UserForm />}
+        children={<UserForm user={user} setShowModal={setShowModal} />}
       />
     )
   }

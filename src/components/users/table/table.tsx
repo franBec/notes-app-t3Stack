@@ -39,7 +39,7 @@ const Table = ({
             <td className="p-2 border-2">{it.lastName}</td>
             <td className="p-2 border-2">{it.mail}</td>
             <td className="p-2 border-2">
-              <Actions />
+              <Actions user={it} />
             </td>
           </tr>
         ))}
