@@ -10,8 +10,8 @@ export enum SortEnum {
   'desc' = 'desc',
 }
 
-//INPUT REQUEST usually send when asking for data
-export const RequestSchema = z
+//INPUT REQUEST usually sent by client when asking for data
+export const PaginationRequestSchema = z
   .object({
     page: z.number().nullish(),
     order: z.string().nullish(),
@@ -19,13 +19,13 @@ export const RequestSchema = z
   })
   .nullish()
 
-export type RequestType = z.infer<typeof RequestSchema>
+export type PaginationRequestType = z.infer<typeof PaginationRequestSchema>
 
-//METADATA returned after fetching data
-export const MetadataSchema = z.object({
+//METADATA returned to the client after fetching data
+export const PaginationResponseSchema = z.object({
   totalRows: z.number(),
   rowsByPage: z.number(),
   currentPage: z.number(),
 })
 
-export type MetadataType = z.infer<typeof MetadataSchema>
+export type PaginationResponseType = z.infer<typeof PaginationResponseSchema>

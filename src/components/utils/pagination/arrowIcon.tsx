@@ -1,11 +1,5 @@
 import { FaLessThan } from 'react-icons/fa'
-
-export enum ArrowEnum {
-  'fastBack' = 'fastBack',
-  'back' = 'back',
-  'forward' = 'forward',
-  'fastForward' = 'fastForward',
-}
+import { ArrowEnum } from './arrows'
 
 const ArrowIcon = ({ type }: { type: ArrowEnum }) => {
   const renderIcon = () => {

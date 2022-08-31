@@ -1,6 +1,6 @@
 import { DefaultQueryCell } from '../../utils/DefaultQueryCell'
 import { trpc } from '../../utils/trpc'
-import { SortEnum, RequestType } from '../../schemas/_pagination'
+import { SortEnum, PaginationRequestType } from '../../schemas/_pagination'
 
 import { useState } from 'react'
 
@@ -9,14 +9,20 @@ import Table from '../../components/users/table/table'
 import LoadingScreen from '../../components/utils/loading/loadingScreen'
 import ErrorComponent from '../../components/utils/errors/errorComponent'
 
-const Index = () => {
-  const [filters, setFilters] = useState<RequestType>({
-    page: 1,
-    order: 'id',
-    sort: SortEnum.asc,
-  })
+import {
+  usePaginationRequest,
+  usePaginationResponse,
+} from '../../zustand/paginationStore'
 
-  const trpcQuery = trpc.useQuery(['user.all', filters])
+const Index = () => {
+  const getPaginationRequest = usePaginationRequest(
+    (state) => state.getPaginationRequest,
+  )
+  const setPaginationResponse = usePaginationResponse(
+    (state) => state.setPaginationResponse,
+  )
+
+  const trpcQuery = trpc.useQuery(['user.all', getPaginationRequest])
   const { refetch } = trpcQuery
   return (
     <>
@@ -30,15 +36,15 @@ const Index = () => {
       <DefaultQueryCell
         query={trpcQuery}
         loading={() => <LoadingScreen />}
-        success={({ data }) => (
-          <>
-            <Table
-              data={data.users}
-              metadata={data.metadata}
-              setFilters={setFilters}
-            />
-          </>
-        )}
+        success={({ data }) => {
+          setPaginationResponse(data.metadata)
+
+          return (
+            <>
+              <Table data={data.users} />
+            </>
+          )
+        }}
         error={({ error }) => <ErrorComponent message={error.toString()} />}
       />
     </>

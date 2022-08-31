@@ -1,19 +1,14 @@
 import { User } from '@prisma/client'
 import { Dispatch, SetStateAction } from 'react'
 
-import { MetadataType, RequestType } from '../../../schemas/_pagination'
+import {
+  PaginationResponseType,
+  PaginationRequestType,
+} from '../../../schemas/_pagination'
 import PaginateNavbar from '../../utils/pagination/paginateNavbar'
 import Actions from './actions/_actions'
 
-const Table = ({
-  data,
-  metadata,
-  setFilters,
-}: {
-  data: User[] | undefined
-  metadata: MetadataType
-  setFilters: Dispatch<SetStateAction<RequestType>>
-}) => {
+const Table = ({ data }: { data: User[] | undefined }) => {
   if (!data) {
     return <p>Srry, no data</p>
   }
@@ -51,7 +46,7 @@ const Table = ({
     <div className="space-y-4">
       <div>{renderTable()}</div>
       <div>
-        <PaginateNavbar metadata={metadata} updateMetadata={setFilters} />
+        <PaginateNavbar />
       </div>
     </div>
   )

@@ -5,7 +5,10 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 import { env } from '../../env/server.mjs'
 
 import { SignupSchema, EditUserSchema } from '../../schemas/user.schema'
-import { RequestSchema, MetadataType } from '../../schemas/_pagination'
+import {
+  PaginationRequestSchema,
+  PaginationResponseType,
+} from '../../schemas/_pagination'
 
 export const userRouter = createRouter()
   /**
@@ -46,7 +49,7 @@ export const userRouter = createRouter()
    * get all users
    */
   .query('all', {
-    input: RequestSchema,
+    input: PaginationRequestSchema,
 
     async resolve({ input }) {
       try {
@@ -68,7 +71,7 @@ export const userRouter = createRouter()
         })
 
         //send back metadata that might be useful
-        const metadata: MetadataType = {
+        const metadata: PaginationResponseType = {
           totalRows: (await prisma?.user.count()) ?? 0,
           rowsByPage: rowsByPage,
           currentPage: page,

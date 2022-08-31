@@ -1,35 +1,52 @@
-import { Dispatch, SetStateAction } from 'react'
-import { MetadataType, RequestType } from '../../../schemas/_pagination'
-import ArrowIcon, { ArrowEnum } from './arrowIcon'
+import ArrowIcon from './arrowIcon'
 
-const Arrows = ({
-  metadata,
-  updateMetadata,
-}: {
-  metadata: MetadataType
-  updateMetadata: Dispatch<SetStateAction<RequestType>>
-}) => {
-  const { currentPage, rowsByPage, totalRows } = metadata
+import {
+  usePaginationRequest,
+  usePaginationResponse,
+} from '../../../zustand/paginationStore'
+
+export enum ArrowEnum {
+  'fastBack' = 'fastBack', //<<
+  'back' = 'back', //<
+  'forward' = 'forward', //>
+  'fastForward' = 'fastForward', //>>
+}
+
+const Arrows = () => {
+  const getPaginationResponse = usePaginationResponse(
+    (state) => state.getPaginationResponse,
+  )
+  const setPaginationRequest = usePaginationRequest(
+    (state) => state.setPaginationRequest,
+  )
+
+  const { currentPage, rowsByPage, totalRows } = getPaginationResponse
   const totalPages = Math.ceil(totalRows / rowsByPage)
 
   const handleArrowClick = (type: ArrowEnum) => {
     switch (type) {
       case ArrowEnum.fastBack:
-        updateMetadata({ ...metadata, page: 1 })
+        setPaginationRequest({ ...getPaginationResponse, page: 1 })
         break
 
       case ArrowEnum.back:
         currentPage > 1 &&
-          updateMetadata({ ...metadata, page: currentPage - 1 })
+          setPaginationRequest({
+            ...getPaginationResponse,
+            page: currentPage - 1,
+          })
         break
 
       case ArrowEnum.forward:
         currentPage < totalPages &&
-          updateMetadata({ ...metadata, page: currentPage + 1 })
+          setPaginationRequest({
+            ...getPaginationResponse,
+            page: currentPage + 1,
+          })
         break
 
       case ArrowEnum.fastForward:
-        updateMetadata({ ...metadata, page: totalPages })
+        setPaginationRequest({ ...getPaginationResponse, page: totalPages })
         break
     }
   }

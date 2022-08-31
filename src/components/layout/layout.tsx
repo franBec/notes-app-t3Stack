@@ -8,7 +8,7 @@ import LoadingFullScreen from '../utils/loading/loadingFullScreen'
 import { useLoading } from '../../zustand/loadingStore'
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  //useState and useEffect that manage the blocking loading screen
+  //useEffect that manage the blocking loading screen
   //everytime the clildren changes, this makes sure we dont land in a loading screen
   const get_isLoading = useLoading((state) => state.get_isLoading)
   const set_isLoading = useLoading((state) => state.set_isLoading)
