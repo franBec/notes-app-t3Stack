@@ -1,5 +1,4 @@
 import z from 'zod'
-import { SortEnum } from './_pagination'
 
 //used by the sign up form in /signup
 export const SignupSchema = z.object({
