@@ -21,6 +21,8 @@ export const SignupSchema = z.object({
     .max(127, { message: 'At most 127 characters' }),
 })
 
+export type SignUpType = z.infer<typeof SignupSchema>
+
 //used by the edit modal in /users
 export const EditUserSchema = z.object({
   firstName: z
@@ -33,3 +35,5 @@ export const EditUserSchema = z.object({
     .max(50, { message: 'At most 50 characters' }),
   mail: z.string().email(),
 })
+
+export type EditUserType = z.infer<typeof EditUserSchema>

@@ -11,7 +11,7 @@ export const useUsername = create<UsernameState>()(
     persist(
       (set) => ({
         username: null,
-        setUsername: (name) => set((state) => ({ username: name })),
+        setUsername: (name) => set(() => ({ username: name })),
       }),
       {
         name: 'username-storage',

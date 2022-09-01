@@ -52,16 +52,16 @@ const Arrows = () => {
   }
   return (
     <ul className="inline-flex space-x-2">
-      <div onClick={(e) => handleArrowClick(ArrowEnum.fastBack)}>
+      <div onClick={() => handleArrowClick(ArrowEnum.fastBack)}>
         <ArrowIcon type={ArrowEnum.fastBack} />
       </div>
-      <div onClick={(e) => handleArrowClick(ArrowEnum.back)}>
+      <div onClick={() => handleArrowClick(ArrowEnum.back)}>
         <ArrowIcon type={ArrowEnum.back} />
       </div>
-      <div onClick={(e) => handleArrowClick(ArrowEnum.forward)}>
+      <div onClick={() => handleArrowClick(ArrowEnum.forward)}>
         <ArrowIcon type={ArrowEnum.forward} />
       </div>
-      <div onClick={(e) => handleArrowClick(ArrowEnum.fastForward)}>
+      <div onClick={() => handleArrowClick(ArrowEnum.fastForward)}>
         <ArrowIcon type={ArrowEnum.fastForward} />
       </div>
     </ul>

@@ -24,7 +24,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     set_isLoading(false)
     setPaginationResquest(null)
-  }, [children])
+  }, [children, set_isLoading, setPaginationResquest])
 
   //* -------- render! --------
   return (

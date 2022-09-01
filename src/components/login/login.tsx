@@ -19,7 +19,7 @@ const Login = () => {
   //this useEffect catch cases like 'my cookie expired'
   useEffect(() => {
     setUsername(null)
-  }, [])
+  }, [setUsername])
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target

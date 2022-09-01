@@ -1,10 +1,4 @@
 import { User } from '@prisma/client'
-import { Dispatch, SetStateAction } from 'react'
-
-import {
-  PaginationResponseType,
-  PaginationRequestType,
-} from '../../../schemas/_pagination'
 import PaginateNavbar from '../../utils/pagination/paginateNavbar'
 import Actions from './actions/_actions'
 

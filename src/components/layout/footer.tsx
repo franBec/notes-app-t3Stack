@@ -6,6 +6,7 @@ const Footer = () => {
           href="https://www.linkedin.com/in/franco-becvort/"
           target="_blank"
           className="text-white"
+          rel="noreferrer"
         >
           Made by Pollito 🐤 with T3Stack & ♡
         </a>

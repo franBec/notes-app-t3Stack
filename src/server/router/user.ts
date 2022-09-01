@@ -19,7 +19,11 @@ export const userRouter = createRouter()
     async resolve({ ctx, input }) {
       try {
         //data = input except input.repeatPassword, cause prisma panics with an unknown arg from frontend
-        const { repeatPassword, ...data } = input
+        //I had to make the linter ignore this line cause couldn't find another way to delete the repeatPassword property
+        //https://stackoverflow.com/questions/208105/how-do-i-remove-a-property-from-a-javascript-object
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { repeatPassword: _, ...data } = input
 
         //insert into the database
         const user = await ctx.prisma.user.create({ data: data })

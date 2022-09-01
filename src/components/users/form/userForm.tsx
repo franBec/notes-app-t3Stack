@@ -1,8 +1,8 @@
-import { useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 
 import { trpc } from '../../../utils/trpc'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { EditUserSchema } from '../../../schemas/user.schema'
+import { EditUserSchema, EditUserType } from '../../../schemas/user.schema'
 
 import { useLoading } from '../../../zustand/loadingStore'
 import { toast } from 'react-hot-toast'
@@ -40,7 +40,7 @@ const UserForm = ({
     },
   })
 
-  const onSubmit = async (data: any) => {
+  const onSubmit: SubmitHandler<EditUserType> = async (data) => {
     //hide modal
     setShowModal(false)
 

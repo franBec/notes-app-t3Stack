@@ -6,9 +6,9 @@ interface LoadingState {
 }
 
 /**
-*Controls a blocking animation overlay cause something important is going on
-*/
+ *Controls a blocking animation overlay cause something important is going on
+ */
 export const useLoading = create<LoadingState>((set) => ({
   get_isLoading: false,
-  set_isLoading: (boo) => set((state) => ({ get_isLoading: boo })),
+  set_isLoading: (boo) => set(() => ({ get_isLoading: boo })),
 }))

@@ -2,9 +2,9 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 import { trpc } from '../../utils/trpc'
-import { useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { SignupSchema } from '../../schemas/user.schema'
+import { SignupSchema, SignUpType } from '../../schemas/user.schema'
 
 import { useLoading } from '../../zustand/loadingStore'
 
@@ -30,7 +30,7 @@ const Signup = () => {
     },
   })
 
-  function onSubmit(values: any) {
+  const onSubmit: SubmitHandler<SignUpType> = (values) => {
     setLoading(true)
     mutate(values)
     setLoading(false)

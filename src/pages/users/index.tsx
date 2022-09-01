@@ -1,8 +1,5 @@
 import { DefaultQueryCell } from '../../utils/DefaultQueryCell'
 import { trpc } from '../../utils/trpc'
-import { SortEnum, PaginationRequestType } from '../../schemas/_pagination'
-
-import { useState } from 'react'
 
 import Table from '../../components/users/table/table'
 
@@ -27,7 +24,7 @@ const Index = () => {
   return (
     <>
       <button
-        onClick={(e) => {
+        onClick={() => {
           refetch()
         }}
       >

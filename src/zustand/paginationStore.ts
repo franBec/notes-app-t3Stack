@@ -13,8 +13,7 @@ interface PaginationRequestState {
 
 export const usePaginationRequest = create<PaginationRequestState>((set) => ({
   getPaginationRequest: { order: 'id', page: 1, sort: SortEnum.desc },
-  setPaginationRequest: (obj) =>
-    set((state) => ({ getPaginationRequest: obj })),
+  setPaginationRequest: (obj) => set(() => ({ getPaginationRequest: obj })),
 }))
 
 //RESPONSE
@@ -25,6 +24,5 @@ interface PaginationResponseState {
 
 export const usePaginationResponse = create<PaginationResponseState>((set) => ({
   getPaginationResponse: { currentPage: 0, rowsByPage: 0, totalRows: 0 },
-  setPaginationResponse: (obj) =>
-    set((state) => ({ getPaginationResponse: obj })),
+  setPaginationResponse: (obj) => set(() => ({ getPaginationResponse: obj })),
 }))

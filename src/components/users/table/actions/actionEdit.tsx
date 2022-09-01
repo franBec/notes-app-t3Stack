@@ -10,16 +10,14 @@ const ActionEdit = ({ user }: { user: User }) => {
 
   const renderModal = () => {
     return (
-      <SimpleModal
-        modalTitle="Edit User"
-        setShowModal={setShowModal}
-        children={<UserForm user={user} setShowModal={setShowModal} />}
-      />
+      <SimpleModal modalTitle="Edit User" setShowModal={setShowModal}>
+        <UserForm user={user} setShowModal={setShowModal} />
+      </SimpleModal>
     )
   }
   return (
     <>
-      <button onClick={(e) => setShowModal(true)}>
+      <button onClick={() => setShowModal(true)}>
         <FaPencilAlt />
       </button>
       {showModal && renderModal()}
