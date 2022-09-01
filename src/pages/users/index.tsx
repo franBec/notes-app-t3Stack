@@ -1,4 +1,3 @@
-import { DefaultQueryCell } from '../../utils/DefaultQueryCell'
 import { trpc } from '../../utils/trpc'
 
 import Table from '../../components/users/table/table'
@@ -11,7 +10,10 @@ import {
   usePaginationResponse,
 } from '../../zustand/paginationStore'
 
+import { useRefetch } from '../../zustand/refetchStore'
+
 const Index = () => {
+  //pagination stuff
   const getPaginationRequest = usePaginationRequest(
     (state) => state.getPaginationRequest,
   )
@@ -19,33 +21,37 @@ const Index = () => {
     (state) => state.setPaginationResponse,
   )
 
-  const trpcQuery = trpc.useQuery(['user.all', getPaginationRequest])
-  const { refetch } = trpcQuery
-  return (
-    <>
-      <button
-        onClick={() => {
-          refetch()
-        }}
-      >
-        Refetch!
-      </button>
-      <DefaultQueryCell
-        query={trpcQuery}
-        loading={() => <LoadingScreen />}
-        success={({ data }) => {
-          setPaginationResponse(data.metadata)
+  //go fetch some data
+  const { isLoading, isError, error, data, refetch } = trpc.useQuery([
+    'user.all',
+    getPaginationRequest,
+  ])
 
-          return (
-            <>
-              <Table data={data.users} />
-            </>
-          )
-        }}
-        error={({ error }) => <ErrorComponent message={error.toString()} />}
-      />
-    </>
-  )
+  //add refetch to a store, so can be used for anyone down the road if data needs to be refetched
+  const setRefetch = useRefetch((state) => state.setRefetch)
+
+  //renders!
+
+  if (isLoading) {
+    return <LoadingScreen />
+  }
+
+  if (isError) {
+    return <ErrorComponent message={error.toString()} />
+  }
+
+  if (data) {
+    setPaginationResponse(data.metadata)
+    setRefetch(refetch)
+
+    return (
+      <>
+        <Table data={data.users} />
+      </>
+    )
+  }
+
+  return <ErrorComponent message="Page didn't know what to render" />
 }
 
 export default Index

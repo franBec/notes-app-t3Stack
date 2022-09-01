@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 import { trpc } from '../../utils/trpc'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { SignupSchema, SignUpType } from '../../schemas/user.schema'
 
@@ -30,9 +30,9 @@ const Signup = () => {
     },
   })
 
-  const onSubmit: SubmitHandler<SignUpType> = (values) => {
+  const onSubmit: SubmitHandler<FieldValues> = (values) => {
     setLoading(true)
-    mutate(values)
+    mutate(values as SignUpType)
     setLoading(false)
   }
 

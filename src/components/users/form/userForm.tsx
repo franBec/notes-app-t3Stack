@@ -1,14 +1,15 @@
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
+import { User } from '@prisma/client'
+import { Dispatch, SetStateAction } from 'react'
 
 import { trpc } from '../../../utils/trpc'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { EditUserSchema, EditUserType } from '../../../schemas/user.schema'
 
 import { useLoading } from '../../../zustand/loadingStore'
-import { toast } from 'react-hot-toast'
+import { useRefetch } from '../../../zustand/refetchStore'
 
-import { User } from '@prisma/client'
-import { Dispatch, SetStateAction } from 'react'
+import { toast } from 'react-hot-toast'
 import ErrorComponent from '../../utils/errors/errorComponent'
 
 const UserForm = ({
@@ -21,6 +22,9 @@ const UserForm = ({
   //zustand management of a blocking loading screen
   const setLoading = useLoading((state) => state.set_isLoading)
 
+  //get the ability to refetch all the users from the zustand bucket
+  const refetch = useRefetch((state) => state.getRefetch)
+
   //form management
   const {
     handleSubmit,
@@ -30,6 +34,9 @@ const UserForm = ({
 
   const { mutate, error } = trpc.useMutation('user.edit', {
     onSettled: () => {
+      if (refetch) {
+        refetch()
+      }
       setLoading(false)
     },
     onSuccess: () => {
@@ -40,7 +47,7 @@ const UserForm = ({
     },
   })
 
-  const onSubmit: SubmitHandler<EditUserType> = async (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     //hide modal
     setShowModal(false)
 
@@ -48,7 +55,7 @@ const UserForm = ({
     setLoading(true)
 
     //start mutating the data
-    mutate(data)
+    mutate(data as EditUserType)
   }
 
   return (
