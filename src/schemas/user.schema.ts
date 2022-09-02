@@ -1,7 +1,7 @@
 import z from 'zod'
 
 //used by the sign up form in /signup
-export const SignupSchema = z.object({
+export const CreateUserSchema = z.object({
   firstName: z
     .string()
     .min(3, { message: 'At least 3 characters' })
@@ -21,7 +21,7 @@ export const SignupSchema = z.object({
     .max(127, { message: 'At most 127 characters' }),
 })
 
-export type SignUpType = z.infer<typeof SignupSchema>
+export type CreateUserType = z.infer<typeof CreateUserSchema>
 
 //used by the edit modal in /users
 export const EditUserSchema = z.object({

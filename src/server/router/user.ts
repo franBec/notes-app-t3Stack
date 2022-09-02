@@ -4,7 +4,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 
 import { env } from '../../env/server.mjs'
 
-import { SignupSchema, EditUserSchema } from '../../schemas/user.schema'
+import { CreateUserSchema, EditUserSchema } from '../../schemas/user.schema'
 import {
   PaginationRequestSchema,
   PaginationResponseType,
@@ -14,8 +14,8 @@ export const userRouter = createRouter()
   /**
    * register a new user
    */
-  .mutation('signup', {
-    input: SignupSchema,
+  .mutation('create', {
+    input: CreateUserSchema,
     async resolve({ ctx, input }) {
       try {
         //data = input except input.repeatPassword, cause prisma panics with an unknown arg from frontend
