@@ -9,7 +9,13 @@ export const noteRouter = createRouter()
     async resolve() {
       try {
         return prisma.note.findMany()
-      } catch (error) {}
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: '' + error,
+          cause: error,
+        })
+      }
     },
   })
 

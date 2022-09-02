@@ -1,4 +1,9 @@
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
+import {
+  FieldValues,
+  SubmitHandler,
+  useForm,
+  Controller,
+} from 'react-hook-form'
 import { User, Rol } from '@prisma/client'
 import { Dispatch, SetStateAction } from 'react'
 
@@ -11,6 +16,7 @@ import { useRefetch } from '../../../zustand/refetchStore'
 
 import { toast } from 'react-hot-toast'
 import ErrorComponent from '../../utils/errors/errorComponent'
+import SelectRols from './selectRols'
 
 const UserForm = ({
   user,
@@ -33,6 +39,7 @@ const UserForm = ({
     handleSubmit,
     register,
     formState: { errors },
+    control,
   } = useForm({ resolver: zodResolver(EditUserSchema) })
 
   const { mutate, error } = trpc.useMutation('user.edit', {
@@ -62,7 +69,7 @@ const UserForm = ({
   }
 
   return (
-    <>
+    <div className="space-y-4">
       {error && <ErrorComponent message={error.message} />}
       <div className="flex justify-center">
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
@@ -123,6 +130,21 @@ const UserForm = ({
               {...register('mail')}
             />
           </div>
+          <div>
+            <label htmlFor="rols" className="mb-2 block text-sm font-medium">
+              Rols{' '}
+              {errors.mail?.message && (
+                <span className="text-red-500">
+                  {` -${errors.mail.message}`}
+                </span>
+              )}
+            </label>
+            <Controller
+              name="rols"
+              control={control}
+              render={({ field }) => <SelectRols field={field} />}
+            />
+          </div>
 
           <button
             type="submit"
@@ -132,7 +154,7 @@ const UserForm = ({
           </button>
         </form>
       </div>
-    </>
+    </div>
   )
 }
 
