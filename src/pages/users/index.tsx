@@ -37,7 +37,7 @@ const Index = () => {
   }
 
   if (isError) {
-    return <ErrorComponent message={error.toString()} />
+    return <ErrorComponent message={error.message} />
   }
 
   if (data) {

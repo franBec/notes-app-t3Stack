@@ -37,8 +37,8 @@ const Signup = () => {
   }
 
   return (
-    <>
-      {error && <ErrorComponent message={error.toString()} />}
+    <div className="space-y-4">
+      <div>{error && <ErrorComponent message={error.message} />}</div>
       <div className="flex justify-center">
         <div className="rounded-lg border border-gray-300 p-4 shadow-xl">
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
@@ -155,7 +155,7 @@ const Signup = () => {
           </form>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

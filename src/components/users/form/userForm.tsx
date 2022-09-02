@@ -60,7 +60,7 @@ const UserForm = ({
 
   return (
     <>
-      {error && <ErrorComponent message={error.toString()} />}
+      {error && <ErrorComponent message={error.message} />}
       <div className="flex justify-center">
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div>

@@ -26,16 +26,14 @@ export const userRouter = createRouter()
         const { repeatPassword: _, ...data } = input
 
         //insert into the database
-        const user = await ctx.prisma.user.create({ data: data })
-
-        //return
-        return user
+        await ctx.prisma.user.create({ data: data })
       } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {
           if (error.code === 'P2002') {
             throw new TRPCError({
               code: 'CONFLICT',
               message: 'User already exists',
+              cause: error,
             })
           }
         }
