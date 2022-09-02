@@ -1,5 +1,5 @@
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
-import { User } from '@prisma/client'
+import { User, Rol } from '@prisma/client'
 import { Dispatch, SetStateAction } from 'react'
 
 import { trpc } from '../../../utils/trpc'
@@ -16,7 +16,10 @@ const UserForm = ({
   user,
   setShowModal,
 }: {
-  user: User
+  user: User & {
+    rols: Rol[]
+  }
+
   setShowModal: Dispatch<SetStateAction<boolean>>
 }) => {
   //zustand management of a blocking loading screen

@@ -70,6 +70,9 @@ export const userRouter = createRouter()
           skip: rowsByPage * (page - 1),
           take: rowsByPage,
           orderBy: orderByObject,
+          include: {
+            rols: true,
+          },
         })
 
         //send back metadata that might be useful

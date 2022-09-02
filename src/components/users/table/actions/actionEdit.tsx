@@ -1,11 +1,17 @@
-import { User } from '@prisma/client'
+import { User, Rol } from '@prisma/client'
 import { useState } from 'react'
 import { FaPencilAlt } from 'react-icons/fa'
 
 import SimpleModal from '../../../utils/modal/modal'
 import UserForm from '../../form/userForm'
 
-const ActionEdit = ({ user }: { user: User }) => {
+const ActionEdit = ({
+  user,
+}: {
+  user: User & {
+    rols: Rol[]
+  }
+}) => {
   const [showModal, setShowModal] = useState(false)
 
   const renderModal = () => {

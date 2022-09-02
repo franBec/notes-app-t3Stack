@@ -1,8 +1,16 @@
-import { User } from '@prisma/client'
+import { User, Rol } from '@prisma/client'
 import PaginateNavbar from '../../utils/pagination/paginateNavbar'
 import Actions from './actions/_actions'
 
-const Table = ({ data }: { data: User[] | undefined }) => {
+const Table = ({
+  data,
+}: {
+  data:
+    | (User & {
+        rols: Rol[]
+      })[]
+    | undefined
+}) => {
   if (!data) {
     return <p>Srry, no data</p>
   }
