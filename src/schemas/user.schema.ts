@@ -1,6 +1,11 @@
 import z from 'zod'
+import { RolSchema } from './rol.schema'
 
-//used by the sign up form in /signup
+/**
+ * Used by:
+ *  signup form in src/pages/signup
+ *  create mutation in src/server/router/user
+ */
 export const CreateUserSchema = z.object({
   firstName: z
     .string()
@@ -23,7 +28,11 @@ export const CreateUserSchema = z.object({
 
 export type CreateUserType = z.infer<typeof CreateUserSchema>
 
-//used by the edit modal in /users
+/**
+ * Used by:
+ *  form in src/components/users/form
+ *  edit mutation in src/server/router/user
+ */
 export const EditUserSchema = z.object({
   firstName: z
     .string()
@@ -34,6 +43,7 @@ export const EditUserSchema = z.object({
     .min(3, { message: 'At least 3 characters' })
     .max(50, { message: 'At most 50 characters' }),
   mail: z.string().email(),
+  rols: z.array(RolSchema),
 })
 
 export type EditUserType = z.infer<typeof EditUserSchema>
