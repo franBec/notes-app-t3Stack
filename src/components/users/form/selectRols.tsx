@@ -1,21 +1,27 @@
 import { trpc } from '../../../utils/trpc'
 import ErrorComponent from '../../utils/errors/errorComponent'
-import ReactSelect from 'react-select'
-import { ControllerRenderProps, FieldValues } from 'react-hook-form'
 
-const SelectRols = ({
-  field,
-}: {
-  field: ControllerRenderProps<FieldValues, 'rols'>
-}) => {
+import Multiselect from 'multiselect-react-dropdown'
+import { Rol } from '@prisma/client'
+import { useState } from 'react'
+
+const SelectRols = () => {
+  //select stuff
   interface selectOptionsInterface {
-    value: string
-    label: string
+    id: number
+    name: string
+  }
+  const options: selectOptionsInterface[] = []
+  const [optionsSelected, setOptionsSelected] = useState<Rol[]>()
+
+  const handleSelectOption = (selected: Rol[]) => {
+    setOptionsSelected(selected)
   }
 
-  const options: selectOptionsInterface[] = []
+  //fetch rols
   const { isLoading, isError, error, data } = trpc.useQuery(['rol.all'])
 
+  //render
   if (isLoading) {
     return <p>Loading rols...</p>
   }
@@ -25,8 +31,17 @@ const SelectRols = ({
   }
 
   if (data) {
-    data.map((it) => options.push({ value: it.id.toString(), label: it.name }))
-    return <ReactSelect isClearable {...field} options={options} />
+    data.map((it) => options.push({ id: it.id, name: it.name }))
+    return (
+      <Multiselect
+        options={data}
+        displayValue="name"
+        showArrow={true}
+        onSelect={handleSelectOption}
+        onRemove={handleSelectOption}
+        placeholder="Select rol/s (not required)"
+      />
+    )
   }
 
   return <ErrorComponent message="Component didn't know what to render" />

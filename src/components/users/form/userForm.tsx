@@ -1,9 +1,4 @@
-import {
-  FieldValues,
-  SubmitHandler,
-  useForm,
-  Controller,
-} from 'react-hook-form'
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import { User, Rol } from '@prisma/client'
 import { Dispatch, SetStateAction } from 'react'
 
@@ -39,7 +34,6 @@ const UserForm = ({
     handleSubmit,
     register,
     formState: { errors },
-    control,
   } = useForm({ resolver: zodResolver(EditUserSchema) })
 
   const { mutate, error } = trpc.useMutation('user.edit', {
@@ -139,11 +133,7 @@ const UserForm = ({
                 </span>
               )}
             </label>
-            <Controller
-              name="rols"
-              control={control}
-              render={({ field }) => <SelectRols field={field} />}
-            />
+            <SelectRols />
           </div>
 
           <button
