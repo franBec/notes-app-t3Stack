@@ -102,7 +102,14 @@ export const userRouter = createRouter()
       try {
         await ctx.prisma.user.update({
           where: { mail: input.mail },
-          data: input,
+          data: {
+            firstName: input.firstName,
+            lastName: input.lastName,
+            mail: input.mail,
+            rols: {
+              set: input.rols,
+            },
+          },
         })
       } catch (error) {
         throw new TRPCError({

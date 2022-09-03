@@ -1,17 +1,13 @@
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import { User, Rol } from '@prisma/client'
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, FormEvent, SetStateAction, useState } from 'react'
 
 import { trpc } from '../../../utils/trpc'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { EditUserSchema, EditUserType } from '../../../schemas/user.schema'
 
 import { useLoading } from '../../../zustand/loadingStore'
 import { useRefetch } from '../../../zustand/refetchStore'
 
 import { toast } from 'react-hot-toast'
 import ErrorComponent from '../../utils/errors/errorComponent'
-import SelectRols from './selectRols'
 
 const UserForm = ({
   user,
@@ -29,14 +25,51 @@ const UserForm = ({
   //get the ability to refetch all the users from the zustand bucket
   const refetch = useRefetch((state) => state.getRefetch)
 
-  //form management
+  //get the available rols
   const {
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = useForm({ resolver: zodResolver(EditUserSchema) })
+    isLoading,
+    isError,
+    error: fetchingRolError,
+    data: rols,
+  } = trpc.useQuery(['rol.all'])
 
-  const { mutate, error } = trpc.useMutation('user.edit', {
+  //form management
+  const [form, setForm] = useState({
+    firstName: user.firstName,
+    lastName: user.lastName,
+    mail: user.mail,
+    rols: user.rols,
+  })
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+
+    setForm({
+      ...form,
+      [name]: value,
+    })
+  }
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target
+    const id = Number(name)
+    const checkedRols = [...form.rols]
+
+    if (checked) {
+      const rolToPush = rols?.find((it) => it.id === id)
+      if (rolToPush) {
+        checkedRols.push(rolToPush)
+
+        setForm({ ...form, rols: checkedRols })
+      }
+    } else {
+      const filteredRols = checkedRols.filter((it) => it.id !== id)
+      setForm({ ...form, rols: filteredRols })
+    }
+  }
+
+  //submit
+  const { mutate, error: mutationError } = trpc.useMutation('user.edit', {
     onSettled: () => {
       if (refetch) {
         refetch()
@@ -44,6 +77,7 @@ const UserForm = ({
       setLoading(false)
     },
     onSuccess: () => {
+      setShowModal(false)
       toast.success('User edited!')
     },
     onError: () => {
@@ -51,101 +85,113 @@ const UserForm = ({
     },
   })
 
-  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    //hide modal
-    setShowModal(false)
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault()
 
-    //display loading screen
+    //add fontend validation
+
     setLoading(true)
 
-    //start mutating the data
-    mutate(data as EditUserType)
+    mutate(form)
   }
 
-  return (
-    <div className="space-y-4">
-      {error && <ErrorComponent message={error.message} />}
-      <div className="flex justify-center">
-        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div>
-            <label
-              htmlFor="firstName"
-              className="mb-2 block text-sm font-medium"
-            >
-              First Name{' '}
-              {errors.firstName?.message && (
-                <span className="text-red-500">
-                  {` -${errors.firstName.message}`}
-                </span>
-              )}
-            </label>
-            <input
-              type="text"
-              placeholder="First name"
-              defaultValue={user.firstName}
-              className="block w-full rounded-lg border border-gray-300 p-2"
-              {...register('firstName')}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="lastName"
-              className="mb-2 block text-sm font-medium"
-            >
-              Last Name{' '}
-              {errors.lastName?.message && (
-                <span className="text-red-500">
-                  {` -${errors.lastName.message}`}
-                </span>
-              )}
-            </label>
-            <input
-              type="text"
-              placeholder="Last name"
-              defaultValue={user.lastName}
-              className="block w-full rounded-lg border border-gray-300 p-2"
-              {...register('lastName')}
-            />
-          </div>
-          <div>
-            <label htmlFor="mail" className="mb-2 block text-sm font-medium">
-              Mail{' '}
-              {errors.mail?.message && (
-                <span className="text-red-500">
-                  {` -${errors.mail.message}`}
-                </span>
-              )}
-            </label>
-            <input
-              type="text"
-              placeholder="Mail"
-              defaultValue={user.mail}
-              className="block w-full rounded-lg border border-gray-300 p-2"
-              {...register('mail')}
-            />
-          </div>
-          <div>
-            <label htmlFor="rols" className="mb-2 block text-sm font-medium">
-              Rols{' '}
-              {errors.mail?.message && (
-                <span className="text-red-500">
-                  {` -${errors.mail.message}`}
-                </span>
-              )}
-            </label>
-            <SelectRols />
-          </div>
+  //render
+  if (isLoading) {
+    return <p>Loading...</p>
+  }
 
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-blue-500 px-5 py-2.5 text-center  text-white hover:bg-blue-600 "
-          >
-            Save Changes
-          </button>
-        </form>
+  if (isError) {
+    return <ErrorComponent message={fetchingRolError.message} />
+  }
+
+  if (rols) {
+    return (
+      <div className="space-y-4">
+        {mutationError && <ErrorComponent message={mutationError.message} />}
+        <div className="flex justify-center">
+          <form className="space-y-6" onSubmit={(e) => handleSubmit(e)}>
+            <div>
+              <label
+                htmlFor="firstName"
+                className="mb-2 block text-sm font-medium"
+              >
+                First Name
+              </label>
+              <input
+                type="text"
+                name="firstName"
+                placeholder="First name"
+                value={form.firstName}
+                className="block w-full rounded-lg border border-gray-300 p-2"
+                onChange={(e) => handleInputChange(e)}
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="lastName"
+                className="mb-2 block text-sm font-medium"
+              >
+                Last Name
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                placeholder="Last name"
+                value={form.lastName}
+                className="block w-full rounded-lg border border-gray-300 p-2"
+                onChange={(e) => handleInputChange(e)}
+              />
+            </div>
+            <div>
+              <label htmlFor="mail" className="mb-2 block text-sm font-medium">
+                Mail
+              </label>
+              <input
+                type="text"
+                name="mail"
+                placeholder="Mail"
+                value={form.mail}
+                className="block w-full rounded-lg border border-gray-300 p-2"
+                onChange={(e) => handleInputChange(e)}
+              />
+            </div>
+            <div>
+              <label htmlFor="rols" className="mb-2 block text-sm font-medium">
+                Rols
+              </label>
+              <ul>
+                {rols.map((it) => (
+                  <li key={it.id}>
+                    <label className=" flex flex-row space-x-2">
+                      <div>
+                        <input
+                          type="checkbox"
+                          name={it.id.toString()}
+                          value={it.id.toString()}
+                          checked={form.rols.some((rol) => rol.id === it.id)}
+                          onChange={(e) => handleCheckboxChange(e)}
+                        />
+                      </div>
+                      <div className="capitalize">{it.name}</div>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full rounded-lg bg-blue-500 px-5 py-2.5 text-center  text-white hover:bg-blue-600 "
+            >
+              Save Changes
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
+
+  return <ErrorComponent message="Component didn't know what to render" />
 }
 
 export default UserForm

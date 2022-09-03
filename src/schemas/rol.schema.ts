@@ -5,7 +5,6 @@ import z from 'zod'
  */
 export const RolSchema = z.object({
   id: z.number(),
-  name: z.string(),
 })
 
 export type RolType = z.infer<typeof RolSchema>

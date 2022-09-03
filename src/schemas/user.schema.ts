@@ -43,8 +43,8 @@ export type CreateUserType = z.infer<typeof CreateUserSchema>
  */
 
 //temporal fix
-// export const EditUserSchema = UserSchema.extend({
-//   rols: z.array(RolSchema),
-// })
-export const EditUserSchema = UserSchema
+export const EditUserSchema = UserSchema.extend({
+  rols: z.array(RolSchema),
+})
+// export const EditUserSchema = UserSchema
 export type EditUserType = z.infer<typeof EditUserSchema>
