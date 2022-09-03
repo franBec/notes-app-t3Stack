@@ -2,11 +2,10 @@ import z from 'zod'
 import { RolSchema } from './rol.schema'
 
 /**
- * Used by:
- *  signup form in src/pages/signup
- *  create mutation in src/server/router/user
+ * Minimal definition of a user
  */
-export const CreateUserSchema = z.object({
+
+const UserSchema = z.object({
   firstName: z
     .string()
     .min(3, { message: 'At least 3 characters' })
@@ -16,6 +15,15 @@ export const CreateUserSchema = z.object({
     .min(3, { message: 'At least 3 characters' })
     .max(50, { message: 'At most 50 characters' }),
   mail: z.string().email(),
+})
+
+/**
+ * Used by:
+ *  signup form in src/pages/signup
+ *  create mutation in src/server/router/user
+ */
+
+export const CreateUserSchema = UserSchema.extend({
   password: z
     .string()
     .min(8, { message: 'At least 8 characters' })
@@ -33,17 +41,10 @@ export type CreateUserType = z.infer<typeof CreateUserSchema>
  *  form in src/components/users/form
  *  edit mutation in src/server/router/user
  */
-export const EditUserSchema = z.object({
-  firstName: z
-    .string()
-    .min(3, { message: 'At least 3 characters' })
-    .max(50, { message: 'At most 50 characters' }),
-  lastName: z
-    .string()
-    .min(3, { message: 'At least 3 characters' })
-    .max(50, { message: 'At most 50 characters' }),
-  mail: z.string().email(),
-  rols: z.array(RolSchema),
-})
 
+//temporal fix
+// export const EditUserSchema = UserSchema.extend({
+//   rols: z.array(RolSchema),
+// })
+export const EditUserSchema = UserSchema
 export type EditUserType = z.infer<typeof EditUserSchema>
