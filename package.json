@@ -19,7 +19,6 @@
     "@trpc/next": "^9.27.2",
     "@trpc/react": "^9.27.2",
     "@trpc/server": "^9.27.2",
-    "multiselect-react-dropdown": "^2.0.25",
     "next": "12.2.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
