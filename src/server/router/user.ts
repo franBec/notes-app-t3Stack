@@ -32,7 +32,7 @@ export const userRouter = createRouter()
           if (error.code === 'P2002') {
             throw new TRPCError({
               code: 'CONFLICT',
-              message: 'User already exists',
+              message: 'Mail already taken',
               cause: error,
             })
           }
@@ -101,7 +101,7 @@ export const userRouter = createRouter()
     async resolve({ ctx, input }) {
       try {
         await ctx.prisma.user.update({
-          where: { mail: input.mail },
+          where: { id: input.id },
           data: {
             firstName: input.firstName,
             lastName: input.lastName,
@@ -112,6 +112,16 @@ export const userRouter = createRouter()
           },
         })
       } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+          if (error.code === 'P2002') {
+            throw new TRPCError({
+              code: 'CONFLICT',
+              message: 'Mail already taken',
+              cause: error,
+            })
+          }
+        }
+
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: '' + error,

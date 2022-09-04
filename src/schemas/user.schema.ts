@@ -44,6 +44,7 @@ export type CreateUserType = z.infer<typeof CreateUserSchema>
 
 //temporal fix
 export const EditUserSchema = UserSchema.extend({
+  id: z.number(),
   rols: z.array(RolSchema),
 })
 // export const EditUserSchema = UserSchema
