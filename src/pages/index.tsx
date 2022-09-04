@@ -2,9 +2,9 @@
 import type { NextPage } from 'next'
 import { NextApiRequest } from 'next'
 
-import Login from '../components/login/login'
 */
-import Home from '../components/home/home'
+import Login from '../components/login/login'
+//import Home from '../components/home/home'
 
 /*
 export async function getServerSideProps({ req }: { req: NextApiRequest }) {
@@ -31,6 +31,6 @@ const Index: NextPage<Props> = ({ permissions }) => {
 */
 
 const Index = () => {
-  return <Home permissions={['USERS_SEE']} />
+  return <Login />
 }
 export default Index

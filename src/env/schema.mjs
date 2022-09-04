@@ -9,6 +9,7 @@ export const serverSchema = z.object({
   DATABASE_URL: z.string().url(),
   NODE_ENV: z.enum(['development', 'test', 'production']),
   DEFAULT_ROWS_BY_PAGE: z.string(),
+  LOGGER_LEVEL: z.enum(['silly', 'debug', 'verbose', 'info', 'warn', 'error']),
 })
 
 /**

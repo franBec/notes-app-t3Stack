@@ -3,14 +3,20 @@
 //https://youtu.be/T6fRWZWrJzI
 //https://youtu.be/DHZSYYTCTbA
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 
 import { useUsername } from '../../zustand/sessionStore'
 
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { LoginRequest, LoginResponseType } from '../../schemas/login.schema'
+
+import { toast } from 'react-hot-toast'
+import { ApiResponse } from '../../schemas/api.schema'
+
 const Login = () => {
-  const [form, setForm] = useState({ mail: '', password: '' })
   const router = useRouter()
 
   const setUsername = useUsername((state) => state.setUsername)
@@ -21,52 +27,53 @@ const Login = () => {
     setUsername(null)
   }, [setUsername])
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setForm({
-      ...form,
-      [name]: value,
-    })
-  }
+  //form management
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm({ resolver: zodResolver(LoginRequest) })
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
+  //submit
+  const onSubmit: SubmitHandler<FieldValues> = async (values) => {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-type': 'application/json' },
-      body: JSON.stringify(form),
+      body: JSON.stringify(values),
     })
-    const resjson = await res.json()
+    const resjson = (await res.json()) as ApiResponse
 
     if (!resjson.success) {
-      alert(resjson.errorMessage)
+      toast.error(resjson.message || 'Something went wrong...')
       return
     }
-    setUsername(resjson.data.name)
+
+    const data = resjson.data as LoginResponseType
+    const name = data.firstName
+    toast.success('Welcome ' + name)
+    setUsername(name)
     router.push('/')
   }
 
   return (
     <div className="flex justify-center">
       <div className="rounded-lg border border-gray-300 p-4 shadow-xl">
-        <form
-          className="space-y-6"
-          onSubmit={(e: React.FormEvent) => handleLogin(e)}
-        >
+        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <h3 className="text-xl">Login</h3>
           <div>
             <label htmlFor="mail" className="mb-2 block text-sm font-medium">
-              Mail
+              Mail{' '}
+              {errors.mail?.message && (
+                <span className="text-red-500">
+                  {` -${errors.mail.message}`}
+                </span>
+              )}
             </label>
             <input
               type="email"
-              name="mail"
-              id="mail"
               className="block w-full rounded-lg border border-gray-300 p-2"
-              placeholder="mail"
-              required={true}
-              value={form.mail}
-              onChange={(e) => handleFormChange(e)}
+              placeholder="Mail"
+              {...register('mail')}
             />
           </div>
           <div>
@@ -74,17 +81,18 @@ const Login = () => {
               htmlFor="password"
               className="mb-2 block text-sm font-medium"
             >
-              Password
+              Password{' '}
+              {errors.password?.message && (
+                <span className="text-red-500">
+                  {` -${errors.password.message}`}
+                </span>
+              )}
             </label>
             <input
               type="password"
-              name="password"
-              id="password"
               placeholder="••••••••"
               className="block w-full rounded-lg border border-gray-300 p-2"
-              required={true}
-              value={form.password}
-              onChange={(e) => handleFormChange(e)}
+              {...register('password')}
             />
           </div>
 

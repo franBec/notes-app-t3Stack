@@ -42,10 +42,8 @@ export type CreateUserType = z.infer<typeof CreateUserSchema>
  *  edit mutation in src/server/router/user
  */
 
-//temporal fix
 export const EditUserSchema = UserSchema.extend({
   id: z.number(),
   rols: z.array(RolSchema),
 })
-// export const EditUserSchema = UserSchema
 export type EditUserType = z.infer<typeof EditUserSchema>

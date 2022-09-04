@@ -1,6 +1,7 @@
 import { toast } from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import { RiLogoutBoxRFill } from 'react-icons/ri'
+import { ApiResponse } from '../../schemas/api.schema'
 
 const Logout = () => {
   const router = useRouter()
@@ -28,10 +29,10 @@ const Logout = () => {
 
   const toastLogout = async () => {
     const res = await fetch('/api/auth/logout')
-    if (res.status !== 200) {
-      //   console.error(res.message)
-      //   throw new Error(res.message)
-      throw new Error()
+    const resjson = (await res.json()) as ApiResponse
+    if (resjson.status !== 200) {
+      console.error(resjson.message)
+      throw new Error(resjson.message)
     }
   }
 
