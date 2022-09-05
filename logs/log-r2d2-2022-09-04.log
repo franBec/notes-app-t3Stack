@@ -1,1 +1,0 @@
-2022-09-04T22:52:07.421Z - INFO   : src/server/services/auth/login -> error 400 bad request: mail and password are required

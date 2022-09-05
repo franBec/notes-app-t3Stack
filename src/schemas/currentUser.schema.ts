@@ -1,9 +1,7 @@
 export type GetIdType = {
-  id?: number
-  error?: string
+  id: number | null
 }
 
 export type GetPermissionsType = {
-  permissions?: string[]
-  error?: string
+  permissions: string[] | null
 }

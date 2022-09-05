@@ -12,10 +12,15 @@ const fileName = 'src/server/services/auth/currentUser'
 export async function getId(req: NextApiRequest): Promise<GetIdType> {
   try {
     const payload = await getDecodedPayload(req)
-    return payload
+
+    if (!payload || !payload.id) {
+      return { id: null }
+    }
+
+    return { id: payload.id }
   } catch (error) {
     logException(fileName + '.getId()', error)
-    return { error: '' + error }
+    return { id: null }
   }
 }
 
@@ -24,8 +29,8 @@ export async function getPermissions(
 ): Promise<GetPermissionsType> {
   try {
     const payload = await getDecodedPayload(req)
-    if (!payload.id) {
-      return payload
+    if (!payload || !payload.id) {
+      return { permissions: null }
     }
     const user = await prisma.user.findUnique({
       where: {
@@ -42,7 +47,7 @@ export async function getPermissions(
 
     if (!user) {
       logError(fileName + '.getPermissions()', 'User not found')
-      return { error: 'User not found' }
+      return { permissions: null }
     }
     const userPermissions: string[] = []
     for (const rol of user.rols) {
@@ -56,7 +61,7 @@ export async function getPermissions(
     return { permissions: userPermissions }
   } catch (error) {
     logException(fileName + '.getPermissions()', error)
-    return { error: '' + error }
+    return { permissions: null }
   } finally {
     await prisma.$disconnect()
   }
