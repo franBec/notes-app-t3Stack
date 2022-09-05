@@ -20,6 +20,7 @@ const Home = ({ permissions }: { permissions: string[] }) => {
   return (
     <div className="space-y-4">
       <p className="text-center font-bold text-3xl">Hello {getUsername}!</p>
+      {/* <p>{JSON.stringify(permissions)}</p> */}
 
       <div className="p-4">
         <div className="grid grid-cols-2 gap-8 place-content-center">
@@ -33,7 +34,7 @@ const Home = ({ permissions }: { permissions: string[] }) => {
             link="/archivedNotes"
             title="Go to Archived Notes"
           />
-          {permissions.includes('USERS_SEE') && (
+          {permissions.includes('DASHBOARD_SEE') && (
             <HomeCard icon={faUsers} link="/users" title="Users" />
           )}
         </div>

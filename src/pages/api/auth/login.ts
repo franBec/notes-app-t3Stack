@@ -10,6 +10,7 @@ import {
 } from '../../../server/services/api/handleStatusXXX'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { LoginResponseType } from '../../../schemas/login.schema'
+import { LoginTokenPayload } from '../../../schemas/jwtDecode.schema'
 
 const cookieName = process.env.COOKIENAME
 const cookieSecret = process.env.COOKIESECRET
@@ -46,7 +47,8 @@ export default async function loginApi(
     //credentials ok
     if (loginResponse.status === 200) {
       const user = loginResponse.data as LoginResponseType
-      const token = await sign(user.id, cookieSecret)
+      const payload: LoginTokenPayload = { id: user.id }
+      const token = await sign(payload, cookieSecret)
 
       res.setHeader(
         'Set-Cookie',
