@@ -5,7 +5,6 @@ import Login from '../components/login/login'
 import Home from '../components/home/home'
 
 import { getPermissions } from '../server/services/auth/currentUser'
-import { GetPermissionsType } from '../schemas/currentUser.schema'
 
 export async function getServerSideProps({
   req,
@@ -14,14 +13,20 @@ export async function getServerSideProps({
   res: NextApiResponse
 }) {
   //get the current user permissions
-  const props = await getPermissions(req)
+  const permissions = await getPermissions(req)
 
   return {
-    props,
+    props: {
+      permissions,
+    },
   }
 }
 
-const Index: NextPage<GetPermissionsType> = ({ permissions }) => {
+type IndexPropsType = {
+  permissions: string[] | null
+}
+
+const Index: NextPage<IndexPropsType> = ({ permissions }) => {
   return permissions ? <Home permissions={permissions} /> : <Login />
 }
 

@@ -1,36 +1,35 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-//I turn off the linter cause this file is from the T3 stack bootstrap, I ain't gonna modify anything inside here
-// src/server/router/context.ts
 import * as trpc from '@trpc/server'
 import * as trpcNext from '@trpc/server/adapters/next'
 import { prisma } from '../db/client'
 
+import { getId, getPermissions } from '../../server/services/auth/currentUser'
+
 /**
- * Replace this with an object if you want to pass things to createContextInner
+ * When the front makes a request, this makes a context so the backend knows stuff such as
+ *    AUTHENTICATION: who is making the request
+ *    AUTHORIZATION: does the user making the request have permissions to do so
+ *    CONNECTION: the database connection
  */
-type CreateContextOptions = Record<string, never>
+export async function createContext(opts?: trpcNext.CreateNextContextOptions) {
+  let userId = null
+  let userPermissions = null
 
-/** Use this helper for:
- * - testing, where we dont have to Mock Next.js' req/res
- * - trpc's `createSSGHelpers` where we don't have req/res
- **/
-export const createContextInner = async (opts: CreateContextOptions) => {
-  return {
-    prisma,
+  const req = opts?.req
+
+  //if request exists, let try to get the current logged user, and its permissions
+  if (req) {
+    userId = await getId(req)
+    userPermissions = await getPermissions(req)
   }
-}
 
-/**
- * This is the actual context you'll use in your router
- * @link https://trpc.io/docs/context
- **/
-export const createContext = async (
-  opts: trpcNext.CreateNextContextOptions,
-) => {
-  return await createContextInner({})
+  return {
+    userId, //current logged user id or null
+    userPermissions, //current logged user permissions (can be empty), or null
+    prisma, //the prisma connection is always part of the context
+  }
 }
 
 type Context = trpc.inferAsyncReturnType<typeof createContext>
 
+//export the context so the server router and the api handler can use it
 export const createRouter = () => trpc.router<Context>()

@@ -44,6 +44,10 @@ const Login = () => {
     const resjson = (await res.json()) as ApiResponse
 
     if (!resjson.success) {
+      if (resjson.status === 401) {
+        toast.error('Invalid credentials, try again')
+        return
+      }
       toast.error(resjson.message || 'Something went wrong...')
       return
     }

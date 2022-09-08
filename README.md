@@ -2,6 +2,15 @@
 
 This is an app bootstrapped according to the [init.tips](https://init.tips) stack, also known as the T3-Stack.
 
+## TODO:
+
+- add trpc shield
+- add bcrypt
+- add table order by clicking table head
+- add modal display/hide to zustand
+- try to implement react table
+-
+
 ## Why are there `.js` files in here?
 
 As per [T3-Axiom #3](https://github.com/t3-oss/create-t3-app/tree/next#3-typesafety-isnt-optional), we take typesafety as a first class citizen. Unfortunately, not all frameworks and plugins support TypeScript which means some of the configuration files have to be `.js` files.
@@ -188,18 +197,18 @@ You can also use docker-compose to build and run the container.
    <summary>docker-compose.yml</summary>
 
    ```yaml
-   version: "3.7"
+   version: '3.7'
    services:
      app:
-       platform: "linux/amd64"
+       platform: 'linux/amd64'
        build:
          context: .
          dockerfile: Dockerfile
          args:
-           NEXT_PUBLIC_FOO: "foo"
+           NEXT_PUBLIC_FOO: 'foo'
        working_dir: /app
        ports:
-         - "3000:3000"
+         - '3000:3000'
        image: t3-app
        environment:
          - BAR=bar

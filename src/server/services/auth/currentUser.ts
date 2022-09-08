@@ -1,36 +1,32 @@
 import { prisma } from '../../db/client'
 import getDecodedPayload from './jwtDecode'
-import {
-  GetIdType,
-  GetPermissionsType,
-} from '../../../schemas/currentUser.schema'
 import { NextApiRequest } from 'next'
 import { logError, logException } from '../logger/commonLogs'
 
 const fileName = 'src/server/services/auth/currentUser'
 
-export async function getId(req: NextApiRequest): Promise<GetIdType> {
+export async function getId(req: NextApiRequest): Promise<number | null> {
   try {
     const payload = await getDecodedPayload(req)
 
     if (!payload || !payload.id) {
-      return { id: null }
+      return null
     }
 
-    return { id: payload.id }
+    return payload.id
   } catch (error) {
     logException(fileName + '.getId()', error)
-    return { id: null }
+    return null
   }
 }
 
 export async function getPermissions(
   req: NextApiRequest,
-): Promise<GetPermissionsType> {
+): Promise<string[] | null> {
   try {
     const payload = await getDecodedPayload(req)
     if (!payload || !payload.id) {
-      return { permissions: null }
+      return null
     }
     const user = await prisma.user.findUnique({
       where: {
@@ -47,7 +43,7 @@ export async function getPermissions(
 
     if (!user) {
       logError(fileName + '.getPermissions()', 'User not found')
-      return { permissions: null }
+      return null
     }
     const userPermissions: string[] = []
     for (const rol of user.rols) {
@@ -58,10 +54,10 @@ export async function getPermissions(
       }
     }
 
-    return { permissions: userPermissions }
+    return userPermissions
   } catch (error) {
     logException(fileName + '.getPermissions()', error)
-    return { permissions: null }
+    return null
   } finally {
     await prisma.$disconnect()
   }
