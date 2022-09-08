@@ -19,7 +19,9 @@ export async function createContext(opts?: trpcNext.CreateNextContextOptions) {
   //if request exists, let try to get the current logged user, and its permissions
   if (req) {
     userId = await getId(req)
-    userPermissions = await getPermissions(req)
+    if (userId) {
+      userPermissions = await getPermissions(userId)
+    }
   }
 
   return {

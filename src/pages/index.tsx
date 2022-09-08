@@ -4,7 +4,7 @@ import { NextApiRequest } from 'next'
 import Login from '../components/login/login'
 import Home from '../components/home/home'
 
-import { getPermissions } from '../server/services/auth/currentUser'
+import { getId, getPermissions } from '../server/services/auth/currentUser'
 
 export async function getServerSideProps({
   req,
@@ -12,8 +12,12 @@ export async function getServerSideProps({
   req: NextApiRequest
   res: NextApiResponse
 }) {
-  //get the current user permissions
-  const permissions = await getPermissions(req)
+  const id = await getId(req)
+  let permissions = null
+
+  if (id) {
+    permissions = await getPermissions(id)
+  }
 
   return {
     props: {

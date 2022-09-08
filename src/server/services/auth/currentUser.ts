@@ -20,17 +20,11 @@ export async function getId(req: NextApiRequest): Promise<number | null> {
   }
 }
 
-export async function getPermissions(
-  req: NextApiRequest,
-): Promise<string[] | null> {
+export async function getPermissions(id: number): Promise<string[] | null> {
   try {
-    const payload = await getDecodedPayload(req)
-    if (!payload || !payload.id) {
-      return null
-    }
     const user = await prisma.user.findUnique({
       where: {
-        id: payload.id,
+        id: id,
       },
       include: {
         rols: {
