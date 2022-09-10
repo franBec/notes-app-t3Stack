@@ -41,7 +41,7 @@ const UserForm = ({
     isError,
     error: fetchingRolError,
     data: rols,
-  } = trpc.useQuery(['rol.all'])
+  } = trpc.useQuery(['rol.findManyRol'])
 
   //form management
   const [form, setForm] = useState({
@@ -117,21 +117,24 @@ const UserForm = ({
   }, [validateForm])
 
   //submit
-  const { mutate, error: mutationError } = trpc.useMutation('user.edit', {
-    onSettled: () => {
-      if (refetch) {
-        refetch()
-      }
-      setLoading(false)
+  const { mutate, error: mutationError } = trpc.useMutation(
+    'user.updateOneUser',
+    {
+      onSettled: () => {
+        if (refetch) {
+          refetch()
+        }
+        setLoading(false)
+      },
+      onSuccess: () => {
+        setShowModal(false)
+        toast.success('User edited!')
+      },
+      onError: () => {
+        toast.error('Something went wrong...')
+      },
     },
-    onSuccess: () => {
-      setShowModal(false)
-      toast.success('User edited!')
-    },
-    onError: () => {
-      toast.error('Something went wrong...')
-    },
-  })
+  )
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()

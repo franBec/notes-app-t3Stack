@@ -5,7 +5,7 @@ import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 
 export const noteRouter = createRouter()
-  .query('all', {
+  .query('findManyNote', {
     async resolve() {
       try {
         return prisma.note.findMany()
@@ -19,7 +19,7 @@ export const noteRouter = createRouter()
     },
   })
 
-  .query('byId', {
+  .query('findUniqueNote', {
     input: z.object({ id: z.number() }),
     async resolve({ input }) {
       try {

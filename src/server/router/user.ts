@@ -11,10 +11,7 @@ import {
 } from '../../schemas/_pagination'
 
 export const userRouter = createRouter()
-  /**
-   * register a new user
-   */
-  .mutation('create', {
+  .mutation('createOneUser', {
     input: CreateUserSchema,
     async resolve({ ctx, input }) {
       try {
@@ -47,10 +44,7 @@ export const userRouter = createRouter()
     },
   })
 
-  /**
-   * get all users
-   */
-  .query('all', {
+  .query('findManyUser', {
     input: PaginationRequestSchema,
 
     async resolve({ input }) {
@@ -93,10 +87,7 @@ export const userRouter = createRouter()
     },
   })
 
-  /**
-   * edit a user
-   */
-  .mutation('edit', {
+  .mutation('updateOneUser', {
     input: EditUserSchema,
     async resolve({ ctx, input }) {
       try {

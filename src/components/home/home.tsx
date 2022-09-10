@@ -34,7 +34,7 @@ const Home = ({ permissions }: { permissions: string[] }) => {
             link="/archivedNotes"
             title="Go to Archived Notes"
           />
-          {permissions.includes('DASHBOARD_SEE') && (
+          {permissions.includes('QUERY_USER_findManyUser') && (
             <HomeCard icon={faUsers} link="/users" title="Users" />
           )}
         </div>

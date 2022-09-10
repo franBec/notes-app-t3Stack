@@ -4,7 +4,7 @@ import { trpc } from '../../utils/trpc'
 
 export default function NotePage() {
   const id = Number(useRouter().query.id)
-  const noteQuery = trpc.useQuery(['note.byId', { id }])
+  const noteQuery = trpc.useQuery(['note.findUniqueNote', { id }])
 
   return (
     <DefaultQueryCell

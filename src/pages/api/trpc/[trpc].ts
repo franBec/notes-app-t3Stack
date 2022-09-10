@@ -3,6 +3,7 @@ import { createNextApiHandler } from '@trpc/server/adapters/next'
 import { prisma } from '../../../server/db/client'
 import { appRouter } from '../../../server/router'
 import { createContext } from '../../../server/router/context'
+import logger from '../../../server/services/logger'
 
 // export API handler
 export default createNextApiHandler({
@@ -11,6 +12,6 @@ export default createNextApiHandler({
   teardown: () => prisma.$disconnect(),
 
   onError({ error }) {
-    console.error('Error:', error)
+    logger.error('Error:', error)
   },
 })

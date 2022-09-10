@@ -24,7 +24,7 @@ const Signup = () => {
     formState: { errors },
   } = useForm({ resolver: zodResolver(CreateUserSchema) })
 
-  const { mutate, error } = trpc.useMutation('user.create', {
+  const { mutate, error } = trpc.useMutation('user.createOneUser', {
     onSuccess: () => {
       router.push('/')
     },

@@ -23,7 +23,7 @@ const Index = () => {
 
   //go fetch some data
   const { isLoading, isError, error, data, refetch } = trpc.useQuery([
-    'user.all',
+    'user.findManyUser',
     getPaginationRequest,
   ])
 

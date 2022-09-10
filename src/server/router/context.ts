@@ -4,6 +4,8 @@ import { prisma } from '../db/client'
 
 import { getId, getPermissions } from '../../server/services/auth/currentUser'
 
+import { permissions } from '../services/auth/shield'
+
 /**
  * When the front makes a request, this makes a context so the backend knows stuff such as
  *    AUTHENTICATION: who is making the request
@@ -34,4 +36,4 @@ export async function createContext(opts?: trpcNext.CreateNextContextOptions) {
 type Context = trpc.inferAsyncReturnType<typeof createContext>
 
 //export the context so the server router and the api handler can use it
-export const createRouter = () => trpc.router<Context>()
+export const createRouter = () => trpc.router<Context>().middleware(permissions)
