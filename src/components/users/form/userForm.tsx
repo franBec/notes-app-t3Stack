@@ -19,6 +19,8 @@ import ErrorComponent from '../../utils/errors/errorComponent'
 import { EditUserSchema } from '../../../schemas/user.schema'
 import { ZodError } from 'zod'
 
+import { useRouter } from 'next/router'
+
 const UserForm = ({
   user,
   setShowModal,
@@ -29,13 +31,11 @@ const UserForm = ({
 
   setShowModal: Dispatch<SetStateAction<boolean>>
 }) => {
-  //set blocking loading screen
-  const setLoading = useLoading((state) => state.set_isLoading)
+  //* -------- Fetch the rols and render the checkboxes
 
-  //get the ability to refetch all the users
-  const refetch = useRefetch((state) => state.getRefetch)
-
-  //get the available rols
+  /**
+   * get the available rols
+   */
   const {
     isLoading,
     isError,
@@ -43,112 +43,9 @@ const UserForm = ({
     data: rols,
   } = trpc.useQuery(['rol.findManyRol'])
 
-  //form management
-  const [form, setForm] = useState({
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    mail: user.mail,
-    rols: user.rols,
-  })
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-
-    setForm({
-      ...form,
-      [name]: value,
-    })
-  }
-
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target
-    const id = Number(name)
-    const checkedRols = [...form.rols]
-
-    if (checked) {
-      const rolToPush = rols?.find((it) => it.id === id)
-      if (rolToPush) {
-        checkedRols.push(rolToPush)
-
-        setForm({ ...form, rols: checkedRols })
-      }
-    } else {
-      const filteredRols = checkedRols.filter((it) => it.id !== id)
-      setForm({ ...form, rols: filteredRols })
-    }
-  }
-
-  //validation
-  const [formErrors, setFormErrors] = useState({
-    firstName: '',
-    lastName: '',
-    mail: '',
-  })
-
-  const validateForm = useCallback(() => {
-    try {
-      EditUserSchema.parse(form)
-      return true
-    } catch (error) {
-      const newErrors = { firstName: '', lastName: '', mail: '' }
-      const zodError = error as ZodError
-      for (const err of zodError.errors) {
-        const key = err.path[0]
-        if (
-          key &&
-          typeof key === 'string' &&
-          (key === 'firstName' || key === 'lastName' || key === 'mail')
-        ) {
-          newErrors[key] = err.message
-        }
-      }
-      setFormErrors(newErrors)
-      return false
-    }
-  }, [form])
-
-  useEffect(() => {
-    setFormErrors({
-      firstName: '',
-      lastName: '',
-      mail: '',
-    })
-  }, [validateForm])
-
-  //submit
-  const { mutate, error: mutationError } = trpc.useMutation(
-    'user.updateOneUser',
-    {
-      onSettled: () => {
-        if (refetch) {
-          refetch()
-        }
-        setLoading(false)
-      },
-      onSuccess: () => {
-        setShowModal(false)
-        toast.success('User edited!')
-      },
-      onError: () => {
-        toast.error('Something went wrong...')
-      },
-    },
-  )
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
-
-    setLoading(true)
-
-    if (!validateForm()) {
-      setLoading(false)
-      return
-    }
-    mutate(form)
-  }
-
-  //render
+  /**
+   * render the rol checkboxes
+   */
   const renderRols = () => {
     if (isLoading) {
       return <p>Loading...</p>
@@ -184,6 +81,166 @@ const UserForm = ({
     return <ErrorComponent message="Component didn't know what to render" />
   }
 
+  //* -------- Handle form changes
+
+  /**
+   * form management
+   */
+  const [form, setForm] = useState({
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    mail: user.mail,
+    rols: user.rols,
+  })
+
+  /**
+   * handle form input (only textfields)
+   */
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+
+    setForm({
+      ...form,
+      [name]: value,
+    })
+  }
+
+  /**
+   * handle form input (only checkboxes)
+   */
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target
+    const id = Number(name)
+    const checkedRols = [...form.rols]
+
+    if (checked) {
+      const rolToPush = rols?.find((it) => it.id === id)
+      if (rolToPush) {
+        checkedRols.push(rolToPush)
+
+        setForm({ ...form, rols: checkedRols })
+      }
+    } else {
+      const filteredRols = checkedRols.filter((it) => it.id !== id)
+      setForm({ ...form, rols: filteredRols })
+    }
+  }
+
+  //* -------- Hnadle form validation
+
+  /**
+   * manage errors in form fields when submitting
+   */
+  const [formErrors, setFormErrors] = useState({
+    firstName: '',
+    lastName: '',
+    mail: '',
+  })
+
+  /**
+   * callback used by the useEffect that setFormErrors. It detects errors in the form fields
+   */
+  const validateForm = useCallback(() => {
+    try {
+      EditUserSchema.parse(form)
+      return true
+    } catch (error) {
+      const newErrors = { firstName: '', lastName: '', mail: '' }
+      const zodError = error as ZodError
+      for (const err of zodError.errors) {
+        const key = err.path[0]
+        if (
+          key &&
+          typeof key === 'string' &&
+          (key === 'firstName' || key === 'lastName' || key === 'mail')
+        ) {
+          newErrors[key] = err.message
+        }
+      }
+      setFormErrors(newErrors)
+      return false
+    }
+  }, [form])
+
+  /**
+   * triggers the form validation on submit event
+   */
+  useEffect(() => {
+    setFormErrors({
+      firstName: '',
+      lastName: '',
+      mail: '',
+    })
+  }, [validateForm])
+
+  //* -------- Const that are used when form submit
+
+  /**
+   * router to push to main page in case of a forbidden error
+   */
+  const router = useRouter()
+
+  /**
+   * set blocking loading screen
+   */
+  const setLoading = useLoading((state) => state.set_isLoading)
+
+  /**
+   * when success, to see the reflected change / other changes that may had happen, we refetch all the users
+   */
+  const refetch = useRefetch((state) => state.getRefetch)
+
+  //* -------- Handle form submit
+
+  /**
+   * submits the form to the backemd
+   */
+  const { mutate, error: mutationError } = trpc.useMutation(
+    'user.updateOneUser',
+    {
+      onSettled: () => {
+        setLoading(false)
+      },
+      onSuccess: () => {
+        if (refetch) {
+          refetch()
+        }
+        setShowModal(false)
+        toast.success('User edited!')
+      },
+    },
+  )
+
+  /**
+   * handle submit event in form
+   */
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault()
+
+    setLoading(true)
+
+    if (!validateForm()) {
+      setLoading(false)
+      return
+    }
+    mutate(form)
+  }
+
+  //* -------- Handle submit error responses 401 and 403
+
+  useEffect(() => {
+    if (mutationError?.data?.code === 'FORBIDDEN') {
+      toast.error(mutationError.message)
+      router.push('/')
+    }
+  }, [mutationError, router])
+
+  //* -------- Main render
+
+  /**
+   * main render
+   */
   return (
     <div className="space-y-4">
       <div>

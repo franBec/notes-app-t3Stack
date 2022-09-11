@@ -33,7 +33,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <Header />
 
         {/* Toast notifications */}
-        <Toaster position="top-center" reverseOrder={true} />
+        <Toaster
+          position="top-center"
+          reverseOrder={true}
+          toastOptions={{ duration: 5000 }}
+        />
 
         {/* main content */}
         <main className="p-4 grow bg-slate-100">{children}</main>

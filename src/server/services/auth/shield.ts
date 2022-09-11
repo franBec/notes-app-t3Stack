@@ -1,3 +1,4 @@
+import { TRPCError } from '@trpc/server'
 import { rule, shield, and } from 'trpc-shield'
 
 /**
@@ -35,6 +36,9 @@ export const permissions = shield(
     },
   },
   {
-    fallbackError: new Error('401 or 403'),
+    fallbackError: new TRPCError({
+      code: 'FORBIDDEN',
+      message: "You don't have permissions to access the requested resource",
+    }),
   },
 )

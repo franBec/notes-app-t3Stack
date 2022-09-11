@@ -9,7 +9,8 @@ This is an app bootstrapped according to the [init.tips](https://init.tips) stac
 - add table order by clicking table head
 - add modal display/hide to zustand
 - try to implement react table
--
+- add blocking screen when loggin in/loggin out
+- error boundary
 
 ## Why are there `.js` files in here?
 
