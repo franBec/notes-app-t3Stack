@@ -1,4 +1,3 @@
-// src/pages/_app.tsx
 import { httpBatchLink } from '@trpc/client/links/httpBatchLink'
 import { loggerLink } from '@trpc/client/links/loggerLink'
 import { withTRPC } from '@trpc/next'
@@ -9,22 +8,47 @@ import '../styles/globals.css'
 
 import Layout from '../components/layout/layout'
 
+import { ErrorBoundary } from 'react-error-boundary'
+import ErrorPage from '../components/utils/errors/errorPage'
+
+//error boundary
+function ErrorFallback({
+  error,
+}: {
+  error: Error
+  resetErrorBoundary: (...args: Array<unknown>) => void
+}) {
+  return <ErrorPage error={error} />
+}
+
+//main app
 const MyApp: AppType = ({ Component, pageProps }) => {
+  /*
+  Why the double error boundary?
+    Usually the error is caused by something that went wrong in the childen
+    BUT there's the slight chance that the error may be caused by something in the layout
+    So...
+
+      The inner wrap is what you usually will encounter
+      The outter wrap is a last resource, to the cases that the error is the layout fault
+  */
+
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <Layout>
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
+          <Component {...pageProps} />
+        </ErrorBoundary>
+      </Layout>
+    </ErrorBoundary>
   )
 }
 
+//trpc
 const getBaseUrl = () => {
   if (typeof window !== 'undefined') return '' // browser should use relative url
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}` // SSR should use vercel url
   return `http://localhost:${process.env.PORT ?? 3000}` // dev SSR should use localhost
-}
-
-const getStaleTime = (): number => {
-  return Number(process.env.STALETIME) ?? 10
 }
 
 export default withTRPC<AppRouter>({
@@ -51,7 +75,10 @@ export default withTRPC<AppRouter>({
        */
       queryClientConfig: {
         defaultOptions: {
-          queries: { staleTime: getStaleTime(), refetchOnWindowFocus: false },
+          queries: {
+            refetchOnWindowFocus: false,
+            retry: false,
+          },
         },
       },
     }

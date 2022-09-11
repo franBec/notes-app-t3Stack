@@ -3,7 +3,6 @@ import { trpc } from '../../utils/trpc'
 import Table from '../../components/users/table/table'
 
 import LoadingScreen from '../../components/utils/loading/loadingScreen'
-import ErrorComponent from '../../components/utils/errors/errorComponent'
 
 import {
   usePaginationRequest,
@@ -37,21 +36,15 @@ const Index = () => {
   }
 
   if (isError) {
-    return <ErrorComponent message={error.message} />
+    throw new Error(error.message)
   }
 
   if (data) {
     setPaginationResponse(data.metadata)
     setRefetch(refetch)
 
-    return (
-      <>
-        <Table data={data.users} />
-      </>
-    )
+    return <Table data={data.users} />
   }
-
-  return <ErrorComponent message="Page didn't know what to render" />
 }
 
 export default Index

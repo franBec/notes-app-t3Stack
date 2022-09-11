@@ -14,12 +14,9 @@ import { useLoading } from '../../../zustand/loadingStore'
 import { useRefetch } from '../../../zustand/refetchStore'
 
 import { toast } from 'react-hot-toast'
-import ErrorComponent from '../../utils/errors/errorComponent'
 
 import { EditUserSchema } from '../../../schemas/user.schema'
 import { ZodError } from 'zod'
-
-import { useRouter } from 'next/router'
 
 const UserForm = ({
   user,
@@ -52,7 +49,7 @@ const UserForm = ({
     }
 
     if (isError) {
-      return <ErrorComponent message={fetchingRolError.message} />
+      throw new Error(fetchingRolError.message)
     }
 
     if (rols) {
@@ -77,8 +74,6 @@ const UserForm = ({
         </ul>
       )
     }
-
-    return <ErrorComponent message="Component didn't know what to render" />
   }
 
   //* -------- Handle form changes
@@ -177,11 +172,6 @@ const UserForm = ({
   //* -------- Const that are used when form submit
 
   /**
-   * router to push to main page in case of a forbidden error
-   */
-  const router = useRouter()
-
-  /**
    * set blocking loading screen
    */
   const setLoading = useLoading((state) => state.set_isLoading)
@@ -209,6 +199,9 @@ const UserForm = ({
         setShowModal(false)
         toast.success('User edited!')
       },
+      onError: () => {
+        toast.error('Something went wrong')
+      },
     },
   )
 
@@ -227,96 +220,82 @@ const UserForm = ({
     mutate(form)
   }
 
-  //* -------- Handle submit error responses 401 and 403
-
+  /**
+   * if mutationError, throw it
+   */
   useEffect(() => {
-    if (mutationError?.data?.code === 'FORBIDDEN') {
-      toast.error(mutationError.message)
-      router.push('/')
+    if (mutationError) {
+      throw new Error(mutationError.message)
     }
-  }, [mutationError, router])
+  }, [mutationError])
 
   //* -------- Main render
 
-  /**
-   * main render
-   */
   return (
-    <div className="space-y-4">
-      <div>
-        {mutationError && <ErrorComponent message={mutationError.message} />}
-      </div>
-      <div className="flex justify-center">
-        <form className="space-y-6" onSubmit={(e) => handleSubmit(e)}>
-          <div>
-            <label
-              htmlFor="firstName"
-              className="mb-2 block text-sm font-medium"
-            >
-              First Name{' '}
-              {formErrors.firstName && (
-                <span className="text-red-500">~{formErrors.firstName}</span>
-              )}
-            </label>
-            <input
-              type="text"
-              name="firstName"
-              placeholder="First name"
-              value={form.firstName}
-              className="block w-full rounded-lg border border-gray-300 p-2"
-              onChange={(e) => handleInputChange(e)}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="lastName"
-              className="mb-2 block text-sm font-medium"
-            >
-              Last Name{' '}
-              {formErrors.lastName && (
-                <span className="text-red-500">~{formErrors.lastName}</span>
-              )}
-            </label>
-            <input
-              type="text"
-              name="lastName"
-              placeholder="Last name"
-              value={form.lastName}
-              className="block w-full rounded-lg border border-gray-300 p-2"
-              onChange={(e) => handleInputChange(e)}
-            />
-          </div>
-          <div>
-            <label htmlFor="mail" className="mb-2 block text-sm font-medium">
-              Mail{' '}
-              {formErrors.mail && (
-                <span className="text-red-500">~{formErrors.mail}</span>
-              )}
-            </label>
-            <input
-              type="text"
-              name="mail"
-              placeholder="Mail"
-              value={form.mail}
-              className="block w-full rounded-lg border border-gray-300 p-2"
-              onChange={(e) => handleInputChange(e)}
-            />
-          </div>
-          <div>
-            <label htmlFor="rols" className="mb-2 block text-sm font-medium">
-              Rols
-            </label>
-            {renderRols()}
-          </div>
+    <div className="flex justify-center">
+      <form className="space-y-6" onSubmit={(e) => handleSubmit(e)}>
+        <div>
+          <label htmlFor="firstName" className="mb-2 block text-sm font-medium">
+            First Name{' '}
+            {formErrors.firstName && (
+              <span className="text-red-500">~{formErrors.firstName}</span>
+            )}
+          </label>
+          <input
+            type="text"
+            name="firstName"
+            placeholder="First name"
+            value={form.firstName}
+            className="block w-full rounded-lg border border-gray-300 p-2"
+            onChange={(e) => handleInputChange(e)}
+          />
+        </div>
+        <div>
+          <label htmlFor="lastName" className="mb-2 block text-sm font-medium">
+            Last Name{' '}
+            {formErrors.lastName && (
+              <span className="text-red-500">~{formErrors.lastName}</span>
+            )}
+          </label>
+          <input
+            type="text"
+            name="lastName"
+            placeholder="Last name"
+            value={form.lastName}
+            className="block w-full rounded-lg border border-gray-300 p-2"
+            onChange={(e) => handleInputChange(e)}
+          />
+        </div>
+        <div>
+          <label htmlFor="mail" className="mb-2 block text-sm font-medium">
+            Mail{' '}
+            {formErrors.mail && (
+              <span className="text-red-500">~{formErrors.mail}</span>
+            )}
+          </label>
+          <input
+            type="text"
+            name="mail"
+            placeholder="Mail"
+            value={form.mail}
+            className="block w-full rounded-lg border border-gray-300 p-2"
+            onChange={(e) => handleInputChange(e)}
+          />
+        </div>
+        <div>
+          <label htmlFor="rols" className="mb-2 block text-sm font-medium">
+            Rols
+          </label>
+          {renderRols()}
+        </div>
 
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-blue-500 px-5 py-2.5 text-center  text-white hover:bg-blue-600 "
-          >
-            Save Changes
-          </button>
-        </form>
-      </div>
+        <button
+          type="submit"
+          className="w-full rounded-lg bg-blue-500 px-5 py-2.5 text-center  text-white hover:bg-blue-600 "
+        >
+          Save Changes
+        </button>
+      </form>
     </div>
   )
 }
