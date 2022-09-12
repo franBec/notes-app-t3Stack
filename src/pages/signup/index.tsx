@@ -10,38 +10,55 @@ import { useLoading } from '../../zustand/loadingStore'
 import { useEffect } from 'react'
 
 const Signup = () => {
-  //zustand management of a blocking loading screen
+  //* ---- Const that are used when form submit ----
+
+  /**
+   * set blocking loading screen
+   */
   const setLoading = useLoading((state) => state.set_isLoading)
 
-  //router, used for redirecting to login page when success
+  /**
+   * router, used for redirecting to login page when success
+   */
   const router = useRouter()
 
-  //form management
+  //* ---- Form management ----
+
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm({ resolver: zodResolver(CreateUserSchema) })
 
-  //submit the form
+  //* ---- Handle form submit ----
+
+  /**
+   * submit the form
+   */
   const { mutate, error } = trpc.useMutation('user.createOneUser', {
     onSuccess: () => {
       router.push('/')
     },
   })
 
-  //handle submit
+  /**
+   * handle submit
+   */
   const onSubmit: SubmitHandler<FieldValues> = (values) => {
     setLoading(true)
     mutate(values as CreateUserType)
     setLoading(false)
   }
 
+  //* ---- Handle submit error ----
+
   useEffect(() => {
     if (error) {
       throw new Error(error.message)
     }
   }, [error])
+
+  //* ---- Main render ----
 
   return (
     <div className="flex justify-center">

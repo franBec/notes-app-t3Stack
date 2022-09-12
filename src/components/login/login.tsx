@@ -18,21 +18,11 @@ import { ApiResponse } from '../../schemas/api.schema'
 import { useLoading } from '../../zustand/loadingStore'
 
 const Login = () => {
-  /**
-   * router used to reload '/'
-   * so the main menu renders
-   */
-  const router = useRouter()
-
+  //* ---- when landing here ----
   /**
    * set the username in the layout header
    */
   const setUsername = useUsername((state) => state.setUsername)
-
-  /**
-   * set loading screen while waiting to the fetch to finish
-   */
-  const setLoading = useLoading((state) => state.set_isLoading)
 
   /**
    * if this component mounts, is because there's no current session
@@ -42,18 +32,29 @@ const Login = () => {
     setUsername(null)
   }, [setUsername])
 
-  /**
-   * form management
-   */
+  //* ---- Form management ----
+
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm({ resolver: zodResolver(LoginRequest) })
 
+  //* ---- Const that are used when form submit ----
+
   /**
-   * submit handler
+   * router used to reload '/'
+   * so the main menu renders
    */
+  const router = useRouter()
+
+  /**
+   * set loading screen while waiting to the fetch to finish
+   */
+  const setLoading = useLoading((state) => state.set_isLoading)
+
+  //* ---- Handle submit ----
+
   const onSubmit: SubmitHandler<FieldValues> = async (values) => {
     try {
       //put loading screen
@@ -93,9 +94,8 @@ const Login = () => {
     }
   }
 
-  /**
-   * main render
-   */
+  //* ---- Main render ----
+
   return (
     <div className="flex justify-center">
       <div className="rounded-lg border border-gray-300 p-4 shadow-xl">

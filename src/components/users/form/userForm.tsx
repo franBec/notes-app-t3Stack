@@ -122,7 +122,7 @@ const UserForm = ({
     }
   }
 
-  //* -------- Hnadle form validation
+  //* -------- Handle form validation
 
   /**
    * manage errors in form fields when submitting
