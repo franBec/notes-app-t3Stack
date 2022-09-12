@@ -15,50 +15,87 @@ import { LoginRequest, LoginResponseType } from '../../schemas/login.schema'
 
 import { toast } from 'react-hot-toast'
 import { ApiResponse } from '../../schemas/api.schema'
+import { useLoading } from '../../zustand/loadingStore'
 
 const Login = () => {
+  /**
+   * router used to reload '/'
+   * so the main menu renders
+   */
   const router = useRouter()
 
+  /**
+   * set the username in the layout header
+   */
   const setUsername = useUsername((state) => state.setUsername)
 
-  //if this component mounts, is because there's no current session
-  //this useEffect catch cases like 'my cookie expired'
+  /**
+   * set loading screen while waiting to the fetch to finish
+   */
+  const setLoading = useLoading((state) => state.set_isLoading)
+
+  /**
+   * if this component mounts, is because there's no current session
+   * this useEffect catch cases like 'my cookie expired'
+   */
   useEffect(() => {
     setUsername(null)
   }, [setUsername])
 
-  //form management
+  /**
+   * form management
+   */
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm({ resolver: zodResolver(LoginRequest) })
 
-  //submit
+  /**
+   * submit handler
+   */
   const onSubmit: SubmitHandler<FieldValues> = async (values) => {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-type': 'application/json' },
-      body: JSON.stringify(values),
-    })
-    const resjson = (await res.json()) as ApiResponse
+    try {
+      //put loading screen
+      setLoading(true)
 
-    if (!resjson.success) {
-      if (resjson.status === 401) {
-        toast.error('Invalid credentials, try again')
-        return
+      //request login
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify(values),
+      })
+
+      const resjson = (await res.json()) as ApiResponse
+
+      //if login failed
+      if (!resjson.success) {
+        if (resjson.status === 401) {
+          toast.error('Invalid credentials, try again')
+          return
+        }
+        throw new Error(resjson.message || 'Something went wrong...')
       }
-      toast.error(resjson.message || 'Something went wrong...')
-      return
-    }
 
-    const data = resjson.data as LoginResponseType
-    const name = data.firstName
-    toast.success('Welcome ' + name)
-    setUsername(name)
-    router.push('/')
+      //we had success, let set the username in the front end
+      const data = resjson.data as LoginResponseType
+      const name = data.firstName
+
+      toast.success('Welcome ' + name)
+      setUsername(name)
+
+      //reload the homepage so we see the main menu
+      router.push('/')
+    } catch (error) {
+      toast.error('' + error)
+    } finally {
+      setLoading(false)
+    }
   }
 
+  /**
+   * main render
+   */
   return (
     <div className="flex justify-center">
       <div className="rounded-lg border border-gray-300 p-4 shadow-xl">

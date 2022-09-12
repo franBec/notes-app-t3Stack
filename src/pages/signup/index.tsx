@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { CreateUserSchema, CreateUserType } from '../../schemas/user.schema'
 
 import { useLoading } from '../../zustand/loadingStore'
+import { useEffect } from 'react'
 
 const Signup = () => {
   //zustand management of a blocking loading screen
@@ -22,17 +23,25 @@ const Signup = () => {
     formState: { errors },
   } = useForm({ resolver: zodResolver(CreateUserSchema) })
 
+  //submit the form
   const { mutate, error } = trpc.useMutation('user.createOneUser', {
     onSuccess: () => {
       router.push('/')
     },
   })
 
+  //handle submit
   const onSubmit: SubmitHandler<FieldValues> = (values) => {
     setLoading(true)
     mutate(values as CreateUserType)
     setLoading(false)
   }
+
+  useEffect(() => {
+    if (error) {
+      throw new Error(error.message)
+    }
+  }, [error])
 
   return (
     <div className="flex justify-center">
