@@ -2,11 +2,11 @@ import Link from 'next/link'
 import Logout from './logout'
 
 import { useEffect, useState } from 'react'
-import { useUsername } from '../../zustand/sessionStore'
+import { useSession } from '../../zustand/sessionStore'
 
 const Header = () => {
   //useState & useEffect of username, to prevent hydration error
-  const username = useUsername((state) => state.username)
+  const username = useSession((state) => state.session?.firstName)
   const [getUsername, setUsername] = useState<string | null>()
 
   useEffect(() => {

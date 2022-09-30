@@ -4,13 +4,17 @@ This is an app bootstrapped according to the [init.tips](https://init.tips) stac
 
 ## TODO:
 
-- add trpc shield
+- create z objects for all frontend requests
+- analyze again shield
+- implement whoAmI api and improve it
+- download as excel
+
+- add permissions to a user zustand bucket
+- hide/show buttons given permissions
 - add bcrypt
 - add table order by clicking table head
 - add modal display/hide to zustand
 - try to implement react table
-- add blocking screen when loggin in/loggin out
-- error boundary
 
 ## Why are there `.js` files in here?
 

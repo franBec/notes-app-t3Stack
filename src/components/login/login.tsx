@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 
-import { useUsername } from '../../zustand/sessionStore'
+import { useSession } from '../../zustand/sessionStore'
 
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -22,15 +22,15 @@ const Login = () => {
   /**
    * set the username in the layout header
    */
-  const setUsername = useUsername((state) => state.setUsername)
+  const setSession = useSession((state) => state.setSession)
 
   /**
    * if this component mounts, is because there's no current session
    * this useEffect catch cases like 'my cookie expired'
    */
   useEffect(() => {
-    setUsername(null)
-  }, [setUsername])
+    setSession(undefined)
+  }, [setSession])
 
   //* ---- Form management ----
 
@@ -80,10 +80,11 @@ const Login = () => {
 
       //we had success, let set the username in the front end
       const data = resjson.data as LoginResponseType
-      const name = data.firstName
+      const firstName = data.firstName
+      const permissions = data.permissions
 
-      toast.success('Welcome ' + name)
-      setUsername(name)
+      toast.success('Welcome ' + firstName)
+      setSession({ firstName: firstName, permissions: permissions })
 
       //reload the homepage so we see the main menu
       router.push('/')

@@ -29,6 +29,7 @@ export default async function loginApi(
         .status(405)
         .json(handleStatus405(fileName, expectedMethod, req.method))
 
+    //check for 500
     if (!cookieName) {
       return res
         .status(500)

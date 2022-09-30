@@ -1,20 +1,22 @@
 import create from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 
-interface UsernameState {
-  username: string | null
-  setUsername: (name: string | null) => void
+import { LoginResponseType } from '../schemas/login.schema'
+
+interface SessionState {
+  session: LoginResponseType | undefined
+  setSession: (session: LoginResponseType | undefined) => void
 }
 
-export const useUsername = create<UsernameState>()(
+export const useSession = create<SessionState>()(
   devtools(
     persist(
       (set) => ({
-        username: null,
-        setUsername: (name) => set(() => ({ username: name })),
+        session: undefined,
+        setSession: (session) => set(() => ({ session })),
       }),
       {
-        name: 'username-storage',
+        name: 'session-storage',
       },
     ),
   ),

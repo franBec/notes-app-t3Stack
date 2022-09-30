@@ -1,6 +1,9 @@
 import { prisma } from '../../db/client'
 
-import { LoginRequestType } from '../../../schemas/login.schema'
+import {
+  LoginRequestType,
+  LoginResponseType,
+} from '../../../schemas/login.schema'
 
 import {
   handleStatus200,
@@ -8,6 +11,7 @@ import {
   handleStatus401,
   handleStatus500,
 } from '../api/handleStatusXXX'
+import { getPermissions } from './currentUser'
 
 const fileName = 'src/server/services/auth/login'
 
@@ -34,8 +38,17 @@ export const login = async ({ mail, password }: LoginRequestType) => {
       return handleStatus401(fileName, 'Invalid credentials')
     }
 
-    //all ok!
-    return handleStatus200({ id: user.id, firstName: user.firstName })
+    //all ok, lets get the permissions!
+    const permissions = (await getPermissions(user.id)) ?? []
+
+    //make the data to return
+    const data: LoginResponseType = {
+      id: user.id,
+      firstName: user.firstName,
+      permissions: permissions,
+    }
+
+    return handleStatus200(data)
   } catch (error) {
     return handleStatus500(fileName, error)
   } finally {

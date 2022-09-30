@@ -4,13 +4,13 @@ import { faStickyNote } from '@fortawesome/free-solid-svg-icons'
 import { faArchive } from '@fortawesome/free-solid-svg-icons'
 import { faUsers } from '@fortawesome/free-solid-svg-icons'
 
-import { useUsername } from '../../zustand/sessionStore'
+import { useSession } from '../../zustand/sessionStore'
 
 import HomeCard from './homeCard'
 
 const Home = ({ permissions }: { permissions: string[] }) => {
   //useState & useEffect of username, to prevent hydration error
-  const username = useUsername((state) => state.username)
+  const username = useSession((state) => state.session?.firstName)
   const [getUsername, setUsername] = useState<string | null>()
 
   useEffect(() => {
