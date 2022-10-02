@@ -8,6 +8,7 @@ import { CreateUserSchema, CreateUserType } from '../../schemas/user.schema'
 
 import { useLoading } from '../../zustand/loadingStore'
 import { useEffect } from 'react'
+import toast from 'react-hot-toast'
 
 const Signup = () => {
   //* ---- Const that are used when form submit ----
@@ -37,7 +38,8 @@ const Signup = () => {
    */
   const { mutate, error } = trpc.useMutation('user.createOneUser', {
     onSuccess: () => {
-      router.push('/')
+      toast.success('You have been registered successfully')
+      router.push('/login')
     },
   })
 

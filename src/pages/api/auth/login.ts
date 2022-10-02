@@ -5,15 +5,22 @@ import { serialize } from 'cookie'
 import { login } from '../../../server/services/auth/login'
 
 import {
+  handleStatus200,
   handleStatus405,
   handleStatus500,
 } from '../../../server/services/api/handleStatusXXX'
+
 import { NextApiRequest, NextApiResponse } from 'next'
-import { LoginResponseType } from '../../../schemas/login.schema'
-import { LoginTokenPayload } from '../../../schemas/jwtDecode.schema'
+
+import {
+  AuthServiceLoginType,
+  LoginTokenPayload,
+} from '../../../schemas/auth.schema'
+import getUser_byId from '../../../server/services/auth/getUser_byId'
 
 const cookieName = process.env.COOKIENAME
 const cookieSecret = process.env.COOKIESECRET
+const tokenLifeTime = process.env.TOKEN_LIFETIME
 
 const fileName = 'src/pages/api/auth/login'
 const expectedMethod = 'POST'
@@ -42,30 +49,56 @@ export default async function loginApi(
         .json(handleStatus500(fileName, 'cookieSecret is undefined'))
     }
 
-    //check with the database
-    const loginResponse = await login(req.body)
-
-    //credentials ok
-    if (loginResponse.status === 200) {
-      const user = loginResponse.data as LoginResponseType
-      const payload: LoginTokenPayload = { id: user.id }
-      const token = await sign(payload, cookieSecret)
-
-      res.setHeader(
-        'Set-Cookie',
-        serialize(cookieName, token, {
-          httpOnly: true,
-          maxAge: 3600,
-          sameSite: 'strict',
-          path: '/',
-        }),
-      )
-
-      return res.status(200).json(loginResponse)
+    if (!tokenLifeTime) {
+      return res
+        .status(500)
+        .json(handleStatus500(fileName, 'tokenLifeTime is undefined'))
+    }
+    if (typeof tokenLifeTime === 'number') {
+      return res
+        .status(500)
+        .json(handleStatus500(fileName, 'tokenLifeTime is not a number'))
     }
 
-    //something was not ok
-    return res.status(loginResponse.status).json(loginResponse)
+    //check with the database
+    const loginResponse = (await login(req.body)) as AuthServiceLoginType
+
+    //something went wrong
+    if (!loginResponse.data) {
+      return res.status(loginResponse.status).json(loginResponse)
+    }
+
+    //credentials ok, lets get full info of who logged in
+    //obtenemos info acerca de la persona que se logueó
+    const user = await getUser_byId(loginResponse.data.id)
+
+    //something could've been wrong
+    if (!user) {
+      return res
+        .status(500)
+        .json(
+          handleStatus500(
+            fileName,
+            'Could not recover the user who just logged in',
+          ),
+        )
+    }
+
+    //armamos un token
+    const payload: LoginTokenPayload = { id: loginResponse.data.id }
+    const token = await sign(payload, cookieSecret)
+
+    res.setHeader(
+      'Set-Cookie',
+      serialize(cookieName, token, {
+        httpOnly: true,
+        maxAge: Number(tokenLifeTime),
+        sameSite: 'strict',
+        path: '/',
+      }),
+    )
+
+    return res.status(200).json(handleStatus200(user))
   } catch (error) {
     return res.status(500).json(handleStatus500(fileName, error))
   }

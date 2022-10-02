@@ -1,8 +1,7 @@
 import z from 'zod'
 import { MainSchema } from './main.schema'
-import { PermissionSchema } from './permission.schema'
 
-export const RolSchema = MainSchema.extend({
+export const PermissionSchema = MainSchema.extend({
   name: z
     .string()
     .min(3, { message: 'At least 3 characters' })
@@ -11,9 +10,6 @@ export const RolSchema = MainSchema.extend({
     .string()
     .min(3, { message: 'At least 3 characters' })
     .max(255, { message: 'At most 255 characters' }),
-
-  //has many...
-  permissions: PermissionSchema.array(),
 })
 
-export type RolType = z.infer<typeof RolSchema>
+export type PermissionType = z.infer<typeof PermissionSchema>

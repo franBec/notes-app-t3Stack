@@ -3,7 +3,7 @@ import {
   PaginationRequestType,
   PaginationResponseType,
   SortEnum,
-} from '../schemas/_pagination'
+} from '../schemas/pagination.schema'
 
 //REQUEST
 interface PaginationRequestState {

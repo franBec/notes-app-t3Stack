@@ -1,14 +1,14 @@
 import logger from '../logger'
-import { ApiResponse, Metadata } from '../../../schemas/api.schema'
+import { ApiResponse } from '../../../schemas/api.schema'
+import { PaginationResponseType } from '../../../schemas/pagination.schema'
 
 export function handleStatus200(
   data: unknown | null = null,
-  metadata: Metadata | null = null,
+  metadata: PaginationResponseType | null = null,
 ): ApiResponse {
   //minimun atributes of ApiResponse
   const object: ApiResponse = {
     status: 200,
-    success: true,
   }
 
   //if data, add it!
@@ -32,7 +32,6 @@ export function handleStatus400(
   logger.info(errorMessage)
   return {
     status: 400,
-    success: false,
     message: errorMessage,
   }
 }
@@ -48,7 +47,6 @@ export function handleStatus401(
   logger.info(errorMessage)
   return {
     status: 401,
-    success: false,
     message: errorMessage,
   }
 }
@@ -61,7 +59,6 @@ export function handleStatus403(
   logger.info(errorMessage)
   return {
     status: 403,
-    success: false,
     message: errorMessage,
   }
 }
@@ -74,7 +71,6 @@ export function handleStatus404(
   logger.info(errorMessage)
   return {
     status: 404,
-    success: false,
     message: errorMessage,
   }
 }
@@ -88,18 +84,16 @@ export function handleStatus405(
   logger.info(errorMessage)
   return {
     status: 405,
-    success: false,
     message: errorMessage,
   }
 }
 
-export function handleStatus500(fileName: string, error: unknown): ApiResponse {
+export function handleStatus500(fileName: string, error: unknown) {
   const errorMessage: string =
     fileName + ' -> error 500 internal server error: ' + error
   logger.error(errorMessage)
   return {
     status: 500,
-    success: false,
     message: errorMessage,
   }
 }

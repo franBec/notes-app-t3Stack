@@ -3,34 +3,41 @@
 //https://youtu.be/T6fRWZWrJzI
 //https://youtu.be/DHZSYYTCTbA
 
-import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 
-import { useSession } from '../../zustand/sessionStore'
-
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { LoginRequest, LoginResponseType } from '../../schemas/login.schema'
 
 import { toast } from 'react-hot-toast'
-import { ApiResponse } from '../../schemas/api.schema'
 import { useLoading } from '../../zustand/loadingStore'
+import {
+  LoginRequestSchema,
+  LoginResponseType,
+} from '../../schemas/auth.schema'
+import { useSession } from '../../zustand/sessionStore'
+import { useEffect } from 'react'
 
 const Login = () => {
   //* ---- when landing here ----
-  /**
-   * set the username in the layout header
-   */
-  const setSession = useSession((state) => state.setSession)
+  // router used to go to '/'
+  const router = useRouter()
 
-  /**
-   * if this component mounts, is because there's no current session
-   * this useEffect catch cases like 'my cookie expired'
-   */
+  // set loading screen while waiting to the fetch to finish
+  const setLoading = useLoading((state) => state.set_isLoading)
+
+  //checks that maybe I have a session and I shouldn't be here
+  const getSession = useSession((state) => state.session)
+
   useEffect(() => {
-    setSession(undefined)
-  }, [setSession])
+    setLoading(true)
+    if (getSession) {
+      router.push('/')
+    } else {
+      toast('Please log in!')
+    }
+    setLoading(false)
+  }, [getSession, router, setLoading])
 
   //* ---- Form management ----
 
@@ -38,20 +45,7 @@ const Login = () => {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm({ resolver: zodResolver(LoginRequest) })
-
-  //* ---- Const that are used when form submit ----
-
-  /**
-   * router used to reload '/'
-   * so the main menu renders
-   */
-  const router = useRouter()
-
-  /**
-   * set loading screen while waiting to the fetch to finish
-   */
-  const setLoading = useLoading((state) => state.set_isLoading)
+  } = useForm({ resolver: zodResolver(LoginRequestSchema) })
 
   //* ---- Handle submit ----
 
@@ -67,10 +61,10 @@ const Login = () => {
         body: JSON.stringify(values),
       })
 
-      const resjson = (await res.json()) as ApiResponse
+      const resjson = (await res.json()) as LoginResponseType
 
       //if login failed
-      if (!resjson.success) {
+      if (resjson.status !== 200) {
         if (resjson.status === 401) {
           toast.error('Invalid credentials, try again')
           return
@@ -79,14 +73,10 @@ const Login = () => {
       }
 
       //we had success, let set the username in the front end
-      const data = resjson.data as LoginResponseType
-      const firstName = data.firstName
-      const permissions = data.permissions
 
-      toast.success('Welcome ' + firstName)
-      setSession({ firstName: firstName, permissions: permissions })
+      toast.success('Welcome ' + resjson.data.firstName)
 
-      //reload the homepage so we see the main menu
+      //go to home page
       router.push('/')
     } catch (error) {
       toast.error('' + error)

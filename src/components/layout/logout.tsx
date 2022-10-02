@@ -17,19 +17,13 @@ const Logout = () => {
       error: <b>Something went wrong</b>,
     })
 
-    //cleaning localstorage
+    //clear session
     setSession(undefined)
 
-    /*
-      let's force hard refresh to '/', so
-        -> triggers getServerSideProps of index.jsx
-        -> sessionData.loggedIn is now false
-        -> login.jsx is mounted
-        -> its useEffect will clean up the username from the zustand store
-    */
+    //hard redirect
     router
       .replace({
-        pathname: '/',
+        pathname: '/login',
       })
       .then(() => router.reload())
   }
@@ -38,7 +32,7 @@ const Logout = () => {
     const res = await fetch('/api/auth/logout')
     const resjson = (await res.json()) as ApiResponse
     if (resjson.status !== 200) {
-      throw new Error(resjson.message)
+      throw new Error(resjson.message ?? 'Something went wrong')
     }
   }
 

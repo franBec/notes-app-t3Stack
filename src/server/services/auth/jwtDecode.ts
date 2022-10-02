@@ -1,15 +1,13 @@
-import { LoginTokenPayload } from '../../../schemas/jwtDecode.schema'
 import { verify } from './signAndVerify'
 
 import { logError, logException } from '../logger/commonLogs'
 
 import { NextApiRequest } from 'next'
+import { LoginTokenPayload } from '../../../schemas/auth.schema'
 
 const fileName = 'src/server/services/auth/decode'
 
-export default async function getDecodedPayload(
-  req: NextApiRequest,
-): Promise<LoginTokenPayload | null> {
+export default async function getDecodedPayload(req: NextApiRequest) {
   try {
     const cookieName = process.env.COOKIENAME
     if (!cookieName) {

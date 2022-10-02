@@ -1,8 +1,17 @@
 {
+  "plugins": ["unused-imports", "@typescript-eslint"],
+  "extends": [
+    "next/core-web-vitals",
+    "prettier",
+    "plugin:@typescript-eslint/recommended",
+    "next"
+  ],
   "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": "./tsconfig.json"
-  },
-  "plugins": ["@typescript-eslint"],
-  "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"]
+  "root": true,
+  "rules": {
+    "no-console": "warn",
+    "no-debugger": "warn",
+    "unused-imports/no-unused-imports": "error",
+    "no-var": "error"
+  }
 }

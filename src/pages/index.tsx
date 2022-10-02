@@ -1,37 +1,40 @@
-import type { NextApiResponse, NextPage } from 'next'
-import { NextApiRequest } from 'next'
+import { faStickyNote } from '@fortawesome/free-solid-svg-icons'
+import { faArchive } from '@fortawesome/free-solid-svg-icons'
+import { faUsers } from '@fortawesome/free-solid-svg-icons'
+import HomeCard from '../components/home/homeCard'
+import { useSession } from '../zustand/sessionStore'
 
-import Login from '../components/login/login'
-import Home from '../components/home/home'
+const Home = () => {
+  const session = useSession((state) => state.session)
 
-import { getId, getPermissions } from '../server/services/auth/currentUser'
+  return (
+    <div className="space-y-4">
+      <p className="text-center font-bold text-3xl">
+        Hello {session?.firstName}!
+      </p>
 
-export async function getServerSideProps({
-  req,
-}: {
-  req: NextApiRequest
-  res: NextApiResponse
-}) {
-  const id = await getId(req)
-  let permissions = null
-
-  if (id) {
-    permissions = await getPermissions(id)
-  }
-
-  return {
-    props: {
-      permissions,
-    },
-  }
+      <div className="p-4">
+        <div className="grid grid-cols-2 gap-8 place-content-center">
+          <HomeCard
+            icon={faStickyNote}
+            link="/myNotes"
+            title="Go to My Notes"
+          />
+          <HomeCard
+            icon={faArchive}
+            link="/archivedNotes"
+            title="Go to Archived Notes"
+          />
+          {session?.permissions.includes('QUERY_USER_findManyUser') && (
+            <HomeCard icon={faUsers} link="/users" title="Users" />
+          )}
+        </div>
+      </div>
+      <p className="text-center italic">
+        You can logout from the top right corner
+      </p>
+    </div>
+  )
 }
 
-type IndexPropsType = {
-  permissions: string[] | null
-}
-
-const Index: NextPage<IndexPropsType> = ({ permissions }) => {
-  return permissions ? <Home permissions={permissions} /> : <Login />
-}
-
-export default Index
+export default Home

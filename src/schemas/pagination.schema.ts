@@ -16,6 +16,7 @@ export const PaginationRequestSchema = z
     page: z.number().nullish(),
     order: z.string().nullish(),
     sort: z.nativeEnum(SortEnum).nullish(),
+    limit: z.boolean().default(true).nullish(),
   })
   .nullish()
 

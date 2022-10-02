@@ -8,7 +8,7 @@ import { CreateUserSchema, EditUserSchema } from '../../schemas/user.schema'
 import {
   PaginationRequestSchema,
   PaginationResponseType,
-} from '../../schemas/_pagination'
+} from '../../schemas/pagination.schema'
 
 export const userRouter = createRouter()
   .mutation('createOneUser', {
@@ -23,7 +23,7 @@ export const userRouter = createRouter()
         const { repeatPassword: _, ...data } = input
 
         //insert into the database
-        await ctx.prisma.user.create({ data: data })
+        await ctx.prisma.user.create({ data })
       } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {
           if (error.code === 'P2002') {
@@ -98,7 +98,7 @@ export const userRouter = createRouter()
             lastName: input.lastName,
             mail: input.mail,
             rols: {
-              set: input.rols,
+              set: input.rols.map((it) => ({ id: it.id })),
             },
           },
         })

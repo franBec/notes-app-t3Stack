@@ -10,6 +10,7 @@ import Layout from '../components/layout/layout'
 
 import { ErrorBoundary } from 'react-error-boundary'
 import ErrorPage from '../components/utils/errors/errorPage'
+import RouteGuard from '../components/utils/guard'
 
 //error boundary
 function ErrorFallback({
@@ -30,14 +31,16 @@ const MyApp: AppType = ({ Component, pageProps }) => {
     So...
 
       The inner wrap is what you usually will encounter
-      The outter wrap is a last resource, to the cases that the error is the layout fault
+      The outter wrap is a last resource, in case that the error is the layout fault
   */
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <Layout>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <Component {...pageProps} />
+          <RouteGuard>
+            <Component {...pageProps} />
+          </RouteGuard>
         </ErrorBoundary>
       </Layout>
     </ErrorBoundary>
